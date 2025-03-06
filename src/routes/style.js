@@ -1,37 +1,68 @@
 import express from "express";
 import asyncHandler from "../utils/asyncHandler.js";
-import fetch from "node-fetch"; // 큐레이팅 점수 가져오기기
+import fetch from "node-fetch"; // 큐레이팅 점수 가져오기
 import prisma from "../utils/prismaClient.js";
 
 const styleRouter = express.Router();
 
-// 스타일 상세 조회 (초안)
-styleRouter.get(
-  "/styles/:styleId",
-  asyncHandler(async (req, res) => {
-    const style = await prisma.style.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        categories: true,
-        curation: true,
-      },
-    });
+// 스타일 상세 조회 ranking 필요사항 추가
+styleRouter
+  .route("/styles/:id")
 
-    if (!style) {
-      return res
-        .status(404)
-        .json({ message: "해당 스타일을 찾을 수 없습니다." });
-    }
+  .get(
+    asyncHandler(async (req, res) => {
+      const { id } = req.params;
+      const style = await prisma.style.findUnique({
+        where: { id: parseInt(id) },
+        include: {
+          categories: true,
+          curation: true,
+        },
+      });
 
-    // ✅ 부족했던 curationCount(큐레이팅 개수) 추가!
-    const curationCount = style.curation ? style.curation.length : 0;
+      if (!style) {
+        return res
+          .status(404)
+          .json({ message: "해당 스타일을 찾을 수 없습니다." });
+      }
 
-    res.json({
-      ...style, // 기존 스타일 데이터 유지
-      curationCount, // 큐레이팅 개수 추가
-    });
-  })
-);
+      const curationCount = style.curation ? style.curation.length : 0;
+
+      res.json({
+        ...style,
+        curationCount,
+      });
+    })
+  )
+
+  .put(
+    asyncHandler(async (req, res) => {
+      assert(req.body, PatchStyle);
+      const { id } = req.params;
+      const { title, description, color } = req.body;
+
+      const updatedStyle = await prisma.style.update({
+        where: { id: parseInt(id) },
+        data: {
+          title,
+          description,
+          color,
+        },
+      });
+
+      res.send(updatedStyle);
+    })
+  )
+
+  .delete(
+    asyncHandler(async (req, res) => {
+      const { id } = req.params;
+      await prisma.style.delete({
+        where: { id: parseInt(id) },
+      });
+      res.sendStatus(204);
+    })
+  );
 
 styleRouter.get(
   "/ranking",
