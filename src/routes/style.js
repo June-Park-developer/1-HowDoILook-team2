@@ -5,51 +5,33 @@ import prisma from "../utils/prismaClient.js";
 
 const styleRouter = express.Router();
 
-/* 스타일 상세 조회 (test)
+// 스타일 상세 조회 (초안)
 styleRouter.get(
   "/styles/:styleId",
   asyncHandler(async (req, res) => {
-    const { styleId } = req.params;
-
     const style = await prisma.style.findUnique({
-      where: { id: styleId },
+      where: { id: parseInt(id) },
       include: {
-        categories: true, 
-        curation: {
-          select: {
-            id: true,
-            nickname: true,
-            content: true,
-            trendy: true,
-            personality: true,
-            practicality: true,
-            costEffectiveness: true,
-            createdAt: true,
-          },
-        },
+        categories: true,
+        curation: true,
       },
     });
 
     if (!style) {
-      return res.status(404).json({ message: "해당 스타일을 찾을 수 없습니다." });
+      return res
+        .status(404)
+        .json({ message: "해당 스타일을 찾을 수 없습니다." });
     }
 
+    // ✅ 부족했던 curationCount(큐레이팅 개수) 추가!
+    const curationCount = style.curation ? style.curation.length : 0;
+
     res.json({
-      id: style.id,
-      title: style.title,
-      nickname: style.nickname,
-      tags: style.tags,
-      imageUrls: style.imageUrls,
-      content: style.content,
-      viewCount: style.viewCount,
-      curationCount: style.curation.length, 
-      categories: style.categories, 
-      curations: style.curation, 
-      createdAt: style.createdAt,
+      ...style, // 기존 스타일 데이터 유지
+      curationCount, // 큐레이팅 개수 추가
     });
   })
 );
-*/
 
 styleRouter.get(
   "/ranking",
