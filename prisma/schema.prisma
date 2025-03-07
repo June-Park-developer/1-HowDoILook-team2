@@ -14,12 +14,11 @@ datasource db {
 }
 
 model Style {
-  id       Int    @id @default(autoincrement())
-  title    String
-  nickname String
-  password String
-  content  String
-
+  id         Int        @id @default(autoincrement())
+  title      String
+  nickname   String
+  password   String
+  content    String
   imageUrls  String[]
   viewCount  Int
   createdAt  DateTime   @default(now())
