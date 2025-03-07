@@ -47,7 +47,7 @@ curationRouter.route("/:curationId/comments").post(
       data: {
         content: req.body.content,
         password: req.body.password,
-        curationId: curationId,
+        curationId: parseInt(curationId),
       },
       select: {
         id: true,
