@@ -10,7 +10,7 @@ const IntegerBetween1And10 = s.define(
 );
 
 export const CreateStyle = s.object({
-  name: s.size(s.string(), 1, 50),
+  title: s.size(s.string(), 1, 50),
   description: s.optional(s.size(s.string(), 0, 255)),
   color: s.pattern(s.string(), /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/),
 });
