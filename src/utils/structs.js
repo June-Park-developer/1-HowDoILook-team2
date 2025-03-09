@@ -34,6 +34,8 @@ const PositiveInteger = s.refine(s.string(), "PositiveInteger", (value) => {
 export const ValidQuery = s.object({
   page: PositiveInteger,
   pageSize: PositiveInteger,
+  keyword: s.optional(s.string()),
+  searchBy: s.optional(s.string()),
 });
 
 export const Password = s.object({
