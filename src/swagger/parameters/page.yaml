@@ -1,0 +1,7 @@
+name: page
+in: query
+description: 현재 페이지
+required: false
+schema:
+  type: string
+  default: 1

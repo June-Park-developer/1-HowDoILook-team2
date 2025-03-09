@@ -1,0 +1,9 @@
+description: Bad Request
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "잘못된 요청입니다."
