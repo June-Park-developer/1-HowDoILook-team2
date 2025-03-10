@@ -1,0 +1,12 @@
+name: searchBy
+in: query
+description: 검색 기준
+required: false
+schema:
+  type: string
+  default: title
+  enum:
+    - nickname
+    - title
+    - content
+    - tag

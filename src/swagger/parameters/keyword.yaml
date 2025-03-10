@@ -1,0 +1,7 @@
+name: keyword
+in: query
+description: 검색어
+required: false
+schema:
+  type: string
+  default: ""

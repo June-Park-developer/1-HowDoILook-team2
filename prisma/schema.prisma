@@ -19,12 +19,12 @@ model Style {
   nickname   String
   password   String
   content    String
+  tags       Tag[]
   imageUrls  String[]
   viewCount  Int
   createdAt  DateTime   @default(now())
   curations  Curation[]
   categories Category[]
-  tags       Tag[]
 }
 
 model Tag {

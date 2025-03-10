@@ -3,12 +3,11 @@ CREATE TYPE "CategoryType" AS ENUM ('TOP', 'BOTTOM', 'OUTER', 'DRESS', 'SHOES', 
 
 -- CreateTable
 CREATE TABLE "Style" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "nickname" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "content" TEXT NOT NULL,
-    "tags" TEXT[],
     "imageUrls" TEXT[],
     "viewCount" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -17,8 +16,15 @@ CREATE TABLE "Style" (
 );
 
 -- CreateTable
+CREATE TABLE "Tag" (
+    "tagname" TEXT NOT NULL,
+
+    CONSTRAINT "Tag_pkey" PRIMARY KEY ("tagname")
+);
+
+-- CreateTable
 CREATE TABLE "Curation" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "nickname" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "content" TEXT NOT NULL,
@@ -27,36 +33,48 @@ CREATE TABLE "Curation" (
     "practicality" INTEGER NOT NULL,
     "costEffectiveness" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "styleId" TEXT NOT NULL,
+    "styleId" INTEGER NOT NULL,
 
     CONSTRAINT "Curation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Comment" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "password" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "curationId" TEXT NOT NULL,
+    "curationId" INTEGER NOT NULL,
 
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Category" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "type" "CategoryType" NOT NULL,
     "name" TEXT NOT NULL,
     "brand" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
-    "styleId" TEXT NOT NULL,
+    "styleId" INTEGER NOT NULL,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "_StyleToTag" (
+    "A" INTEGER NOT NULL,
+    "B" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Comment_curationId_key" ON "Comment"("curationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_StyleToTag_AB_unique" ON "_StyleToTag"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_StyleToTag_B_index" ON "_StyleToTag"("B");
 
 -- AddForeignKey
 ALTER TABLE "Curation" ADD CONSTRAINT "Curation_styleId_fkey" FOREIGN KEY ("styleId") REFERENCES "Style"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -66,3 +84,9 @@ ALTER TABLE "Comment" ADD CONSTRAINT "Comment_curationId_fkey" FOREIGN KEY ("cur
 
 -- AddForeignKey
 ALTER TABLE "Category" ADD CONSTRAINT "Category_styleId_fkey" FOREIGN KEY ("styleId") REFERENCES "Style"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_StyleToTag" ADD CONSTRAINT "_StyleToTag_A_fkey" FOREIGN KEY ("A") REFERENCES "Style"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_StyleToTag" ADD CONSTRAINT "_StyleToTag_B_fkey" FOREIGN KEY ("B") REFERENCES "Tag"("tagname") ON DELETE CASCADE ON UPDATE CASCADE;

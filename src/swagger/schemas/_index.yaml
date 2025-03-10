@@ -1,0 +1,4 @@
+Style:
+  $ref: "./style.yaml#/Style"
+CreateStyle:
+  $ref: "./style.yaml#/CreateStyle"

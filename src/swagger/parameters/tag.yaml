@@ -1,0 +1,7 @@
+name: tag
+in: query
+description: 태그
+required: false
+schema:
+  type: string
+  default: ""
