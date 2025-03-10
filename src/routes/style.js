@@ -34,10 +34,10 @@ styleRouter
       const curations = await prisma.curation.findMany({
         skip: offset,
         take: parseInt(pageSize),
-        where: { ...search, styleId: parseInt(styleId) },
+        where: { ...search, styleId },
       });
       const totalItemCount = await prisma.curation.count({
-        where: { ...search, styleId: parseInt(styleId) },
+        where: { ...search, styleId },
       });
       const totalPages = Math.ceil(totalItemCount / pageSize);
       const currentPage = parseInt(page);
@@ -51,7 +51,9 @@ styleRouter
       const curation = await prisma.curation.create({
         data: {
           ...req.body,
-          styleId: parseInt(styleId),
+          style: {
+            connect: { id: styleId },
+          },
         },
       });
       res.status(201).json(curation);
