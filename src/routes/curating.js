@@ -18,11 +18,7 @@ curationRouter
       const modelName = prisma.curation.getEntityName();
       await confirmPassword(modelName, curationId, password);
       const curation = await prisma.curation.update({
-<<<<<<< HEAD
         where: { id: curationId },
-=======
-        where: { id: +curationId },
->>>>>>> parent of 28e54d1 (parseInt로 통일, struct 추가 수정)
         data: req.body,
       });
       res.json(curation);
