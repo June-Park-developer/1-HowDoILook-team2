@@ -1,7 +1,0 @@
-name: pageSize
-in: query
-description: 한 페이지당 게시글 수
-required: false
-schema:
-  type: string
-  default: 5

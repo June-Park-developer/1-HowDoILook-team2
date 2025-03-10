@@ -18,7 +18,7 @@ curationRouter
       const modelName = prisma.curation.getEntityName();
       await confirmPassword(modelName, curationId, password);
       const curation = await prisma.curation.update({
-        where: { id: parseInt(curationId) },
+        where: { id: curationId },
         data: req.body,
       });
       res.json(curation);
@@ -32,7 +32,7 @@ curationRouter
       const modelName = prisma.curation.getEntityName();
       await confirmPassword(modelName, curationId, password);
       await prisma.curation.delete({
-        where: { id: parseInt(curationId) },
+        where: { id: curationId },
       });
       res.json({ message: "큐레이팅 삭제 성공" });
     })
