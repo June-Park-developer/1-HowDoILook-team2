@@ -2,20 +2,20 @@ import * as s from "superstruct";
 
 const pwPattern = s.pattern(s.string(), /(?=.*[a-zA-Z])(?=.*[0-9]).{8,16}/);
 
-const isIntegerBetween1And10 = (value) =>
-  Number.isInteger(value) && value >= 1 && value <= 10;
-const IntegerBetween1And10 = s.define(
-  "IntegerBetween1And10",
-  isIntegerBetween1And10
+const isIntegerBetween0And10 = (value) =>
+  Number.isInteger(value) && value >= 0 && value <= 10;
+const IntegerBetween0And10 = s.define(
+  "IntegerBetween0And10",
+  isIntegerBetween0And10
 );
 
 export const CreateCuration = s.object({
   nickname: s.size(s.string(), 1, 20),
   content: s.size(s.string(), 1, 150),
-  trendy: IntegerBetween1And10,
-  personality: IntegerBetween1And10,
-  practicality: IntegerBetween1And10,
-  costEffectiveness: IntegerBetween1And10,
+  trendy: IntegerBetween0And10,
+  personality: IntegerBetween0And10,
+  practicality: IntegerBetween0And10,
+  costEffectiveness: IntegerBetween0And10,
   password: pwPattern,
 });
 
@@ -34,6 +34,8 @@ const PositiveInteger = s.refine(s.string(), "PositiveInteger", (value) => {
 export const ValidQuery = s.object({
   page: PositiveInteger,
   pageSize: PositiveInteger,
+  searchBy: s.optional(s.string()),
+  keyword: s.optional(s.string()),
 });
 
 export const Password = s.object({
