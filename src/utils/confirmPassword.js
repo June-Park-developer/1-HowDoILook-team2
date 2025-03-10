@@ -2,7 +2,7 @@ import prisma from "./prismaClient.js";
 
 async function confirmPassword(table, id, password) {
   const record = await prisma[table].findUniqueOrThrow({
-    where: { id: +id },
+    where: { id: parseInt(id) },
   });
   if (record.password !== password) {
     const e = new Error();
