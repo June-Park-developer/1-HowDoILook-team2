@@ -5,6 +5,7 @@ import commentRouter from "./routes/comment.js";
 import curationRouter from "./routes/curating.js";
 import imageRouter from "./routes/image.js";
 import styleRouter from "./routes/style.js";
+import tagRouter from "./routes/tag.js";
 
 dotenv.config();
 
@@ -19,6 +20,8 @@ app.use("/curations", curationRouter);
 
 app.use("/images", imageRouter);
 app.use("/download", express.static("files"));
+
+app.use("/tags", tagRouter);
 
 app.listen(process.env.PORT || 3000, () =>
   console.log(`Server started on ${process.env.PORT}`)

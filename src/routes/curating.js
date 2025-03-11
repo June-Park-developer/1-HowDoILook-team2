@@ -60,4 +60,58 @@ curationRouter.route("/:curationId/comments").post(
   })
 );
 
+curationRouter.get(
+  "/average-scores",
+  asyncHandler(async (req, res) => {
+    const styles = await prisma.style.findMany({
+      include: {
+        curation: {
+          select: {
+            trendy: true,
+            personality: true,
+            practicality: true,
+            costEffectiveness: true,
+          },
+        },
+      },
+    });
+
+    // 코드 추가(재웅) : 스타일별 평균 점수 계산 API
+    const averageScores = styles.map((style) => {
+      const totalCuration = style.curation.length;
+
+      const avgScores = totalCuration
+        ? {
+            trendy:
+              style.curation.reduce((sum, c) => sum + c.trendy, 0) /
+              totalCuration,
+            personality:
+              style.curation.reduce((sum, c) => sum + c.personality, 0) /
+              totalCuration,
+            practicality:
+              style.curation.reduce((sum, c) => sum + c.practicality, 0) /
+              totalCuration,
+            costEffectiveness:
+              style.curation.reduce((sum, c) => sum + c.costEffectiveness, 0) /
+              totalCuration,
+          }
+        : { trendy: 0, personality: 0, practicality: 0, costEffectiveness: 0 };
+
+      return {
+        styleId: style.id,
+        avgScores,
+        // 전체 평균 점수 (total) 계산
+        total:
+          (avgScores.trendy +
+            avgScores.personality +
+            avgScores.practicality +
+            avgScores.costEffectiveness) /
+          4,
+      };
+    });
+
+    res.json(averageScores);
+  })
+);
+
 export default curationRouter;
