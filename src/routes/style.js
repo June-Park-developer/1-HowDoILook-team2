@@ -24,21 +24,21 @@ styleRouter
   .post(
     asyncHandler(async (req, res) => {
       assert(req.body, CreateStyle);
-      const { title, description, color } = req.body;
+      const { nickname, title, content } = req.body;
 
       const existingStyle = await prisma.style.findUnique({
         where: { title },
       });
 
       if (existingStyle) {
-        return res.status(409).json({ error: "Style name already exists" });
+        return res.status(400).json({ error: "잘못된 요청입니다." });
       }
 
       const newStyle = await prisma.style.create({
         data: {
+          nickname,
           title,
-          description: description || "",
-          color,
+          content,
         },
       });
 
@@ -52,11 +52,11 @@ styleRouter
   .get(
     asyncHandler(async (req, res) => {
       const { id } = req.params;
-      const style = await prisma.style.findUnique({
+      const style = await prisma.style.findUniqueOrThrow({
         where: { id: parseInt(id) },
       });
       if (!style) {
-        return res.status(404).json({ error: "Style not found" });
+        return res.status(400).json({ error: "잘못된 요청입니다." });
       }
       res.send(style);
     })
@@ -65,14 +65,14 @@ styleRouter
     asyncHandler(async (req, res) => {
       assert(req.body, PatchStyle);
       const { id } = req.params;
-      const { name, description, color } = req.body;
+      const { nickname, title, content } = req.body;
 
       const updatedStyle = await prisma.style.update({
         where: { id: parseInt(id) },
         data: {
-          name,
-          description,
-          color,
+          nickname,
+          title,
+          content,
         },
       });
 
