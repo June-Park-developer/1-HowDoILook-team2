@@ -56,7 +56,7 @@ curationRouter.route("/:curationId/comments").post(
         createdAt: true,
       },
     });
-    res.send(comment);
+    res.status(201).json(comment);
   })
 );
 
