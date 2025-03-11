@@ -2,7 +2,6 @@ import express from "express";
 import asyncHandler from "../utils/asyncHandler.js";
 import { assert } from "superstruct";
 import { PositiveInteger } from "../utils/structs.js";
-import { ValidQuery } from "../utils/structs.js";
 import { CreateCuration, ValidQuery } from "../utils/structs.js";
 import fetch from "node-fetch"; // 큐레이팅 점수 가져오기
 import prisma from "../utils/prismaClient.js";

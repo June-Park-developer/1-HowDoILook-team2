@@ -26,10 +26,14 @@ export const CreateComment = s.object({
   password: pwPattern,
 });
 
-const PositiveInteger = s.refine(s.string(), "PositiveInteger", (value) => {
-  const num = Number(value);
-  return Number.isInteger(num) && num >= 1;
-});
+export const PositiveInteger = s.refine(
+  s.string(),
+  "PositiveInteger",
+  (value) => {
+    const num = Number(value);
+    return Number.isInteger(num) && num >= 1;
+  }
+);
 
 export const ValidQuery = s.object({
   page: PositiveInteger,
