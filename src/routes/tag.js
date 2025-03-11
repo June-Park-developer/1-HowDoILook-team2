@@ -37,7 +37,7 @@ tagRouter.get(
       include: {
         categories: true,
         tags: { select: { tagname: true } },
-        curation: true,
+        curations: true,
       },
     });
 
