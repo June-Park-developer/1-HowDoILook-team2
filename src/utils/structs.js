@@ -26,10 +26,14 @@ export const CreateComment = s.object({
   password: pwPattern,
 });
 
-const PositiveInteger = s.refine(s.string(), "PositiveInteger", (value) => {
-  const num = Number(value);
-  return Number.isInteger(num) && num >= 1;
-});
+export const PositiveInteger = s.refine(
+  s.string(),
+  "PositiveInteger",
+  (value) => {
+    const num = Number(value);
+    return Number.isInteger(num) && num >= 1;
+  }
+);
 
 export const OrOverZero = s.refine(s.string(), "OrOverZero", (value) => {
   const num = Number(value);
