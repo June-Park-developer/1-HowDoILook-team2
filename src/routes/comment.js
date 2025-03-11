@@ -25,9 +25,9 @@ commentRouter
       assert(req.body, CreateComment);
       console.log("after assert");
       const { content, password } = req.body;
-      await confirmPassword(commentId, password);
+      await confirmPassword(parseInt(commentId), password);
       const comment = await prisma.comment.update({
-        where: { id: commentId },
+        where: { id: parseInt(commentId) },
         data: {
           content: content,
         },
@@ -46,9 +46,9 @@ commentRouter
       const { commentId } = req.params;
       assert(req.body, Password);
       const { password } = req.body;
-      await confirmPassword(commentId, password);
+      await confirmPassword(parseInt(commentId), password);
       await prisma.comment.delete({
-        where: { id: commentId },
+        where: { id: parseInt(commentId) },
       });
       res.send({ message: "답글 삭제 성공" });
     })

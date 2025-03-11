@@ -14,21 +14,26 @@ datasource db {
 }
 
 model Style {
-  id         String     @id @default(uuid())
+  id         Int        @id @default(autoincrement())
   title      String
   nickname   String
   password   String
   content    String
-  tags       String[]
   imageUrls  String[]
   viewCount  Int
   createdAt  DateTime   @default(now())
-  curation   Curation[]
+  curations  Curation[]
   categories Category[]
+  tags       Tag[]
+}
+
+model Tag {
+  tagname String  @id
+  styles  Style[]
 }
 
 model Curation {
-  id                String   @id @default(uuid())
+  id                Int      @id @default(autoincrement())
   nickname          String
   password          String
   content           String
@@ -38,27 +43,27 @@ model Curation {
   costEffectiveness Int
   createdAt         DateTime @default(now())
   style             Style    @relation(fields: [styleId], references: [id], onDelete: Cascade)
-  styleId           String
+  styleId           Int
   comment           Comment?
 }
 
 model Comment {
-  id         String   @id @default(uuid())
+  id         Int      @id @default(autoincrement())
   password   String
   content    String
   createdAt  DateTime @default(now())
   curation   Curation @relation(fields: [curationId], references: [id], onDelete: Cascade)
-  curationId String   @unique
+  curationId Int      @unique
 }
 
 model Category {
-  id      String       @id @default(uuid())
+  id      Int          @id @default(autoincrement())
   type    CategoryType
   name    String
   brand   String
   price   Float
   style   Style        @relation(fields: [styleId], references: [id], onDelete: Cascade)
-  styleId String
+  styleId Int
 }
 
 enum CategoryType {

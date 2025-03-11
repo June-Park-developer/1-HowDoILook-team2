@@ -9,12 +9,13 @@ async function main() {
   await prisma.curation.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.category.deleteMany();
+  await prisma.tag.deleteMany();
 
-  // 목 데이터 삽입
-  await prisma.style.createMany({
-    data: STYLES,
-    skipDuplicates: true,
-  });
+  await Promise.all(
+    STYLES.map(async (style) => {
+      await prisma.style.create({ data: style });
+    })
+  );
 
   await prisma.curation.createMany({
     data: CURATIONS,
