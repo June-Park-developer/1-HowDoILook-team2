@@ -4,7 +4,7 @@ export const STYLES = [
     id: 0,
     title: "캐주얼 데일리룩",
     nickname: "fashionista01",
-    password: "pass123",
+    password: "pass1234",
     content: "편안한 캐주얼 스타일이에요!",
     tags: {
       connectOrCreate: [
@@ -29,7 +29,7 @@ export const STYLES = [
     id: 1,
     title: "시크한 블랙 스타일",
     nickname: "blacklover",
-    password: "pass456",
+    password: "pass4568",
     content: "올 블랙 코디 추천합니다!",
     tags: {
       connectOrCreate: [
@@ -54,7 +54,7 @@ export const STYLES = [
     id: 2,
     title: "스트릿 패션 감성",
     nickname: "streetstyler",
-    password: "pass789",
+    password: "pass7890",
     content: "요즘 유행하는 스트릿 스타일입니다.",
     tags: {
       connectOrCreate: [
@@ -94,7 +94,7 @@ export const CURATIONS = [
   {
     id: 1,
     nickname: "fashionguru",
-    password: "guru456",
+    password: "guru4567",
     content: "깔끔한 스타일이네요.",
     trendy: 8,
     personality: 7,

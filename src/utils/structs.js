@@ -26,14 +26,15 @@ export const CreateComment = s.object({
   password: pwPattern,
 });
 
-export const PositiveInteger = s.refine(
-  s.string(),
-  "PositiveInteger",
-  (value) => {
-    const num = Number(value);
-    return Number.isInteger(num) && num >= 1;
-  }
-);
+const PositiveInteger = s.refine(s.string(), "PositiveInteger", (value) => {
+  const num = Number(value);
+  return Number.isInteger(num) && num >= 1;
+});
+
+export const OrOverZero = s.refine(s.string(), "OrOverZero", (value) => {
+  const num = Number(value);
+  return Number.isInteger(num) && num >= 0;
+});
 
 export const ValidQuery = s.object({
   page: PositiveInteger,
@@ -41,6 +42,8 @@ export const ValidQuery = s.object({
   searchBy: s.optional(s.string()),
   keyword: s.optional(s.string()),
 });
+
+export const OptionalQuery = s.partial(ValidQuery);
 
 export const Password = s.object({
   password: pwPattern,
