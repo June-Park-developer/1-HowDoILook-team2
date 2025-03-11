@@ -1,6 +1,8 @@
 import express from "express";
 import asyncHandler from "../utils/asyncHandler.js";
 import { assert } from "superstruct";
+import { PositiveInteger } from "../utils/structs.js";
+import { ValidQuery } from "../utils/structs.js";
 import { CreateCuration, ValidQuery } from "../utils/structs.js";
 import fetch from "node-fetch"; // 큐레이팅 점수 가져오기
 import prisma from "../utils/prismaClient.js";
@@ -62,29 +64,27 @@ styleRouter
   );
 //스타일 상세 조회 ranking 필요사항 추가
 styleRouter
-  .route("/styles/:id")
+  .route("/:id")
 
   .get(
     asyncHandler(async (req, res) => {
+      assert(req.params.id, PositiveInteger);
+
       const { id } = req.params;
       const style = await prisma.style.findUnique({
         where: { id: parseInt(id) },
         include: {
           categories: true,
           curation: true,
+          tags: { select: { tagname: true } },
         },
       });
-
-      if (!style) {
-        return res
-          .status(404)
-          .json({ message: "해당 스타일을 찾을 수 없습니다." });
-      }
 
       const curationCount = style.curation ? style.curation.length : 0;
 
       res.json({
         ...style,
+        tags: style.tags.map((tag) => tag.tagname),
         curationCount,
       });
     })
@@ -96,12 +96,29 @@ styleRouter
       const { id } = req.params;
       const { title, description, color } = req.body;
 
+      const tagRecords = await Promise.all(
+        tags.map(async (tagname) => {
+          return await prisma.tag.upsert({
+            where: { tagname },
+            update: {},
+            create: { tagname },
+          });
+        })
+      );
+
       const updatedStyle = await prisma.style.update({
         where: { id: parseInt(id) },
         data: {
           title,
           description,
           color,
+          tags: {
+            set: [],
+            connect: tagRecords.map((tag) => ({ tagname: tag.tagname })),
+          },
+        },
+        include: {
+          tags: { select: { tagname: true } },
         },
       });
 
@@ -122,16 +139,27 @@ styleRouter
 styleRouter.get(
   "/ranking",
   asyncHandler(async (req, res) => {
+    assert(req.query, ValidQuery);
+
     const { sort, page = 1, pageSize = 5 } = req.query;
 
     const response = await fetch(
       "http://localhost:3000/curations/average-scores"
     );
     const rankings = await response.json();
+    const styles = await prisma.style.findMany({
+      include: {
+        tags: { select: { tagname: true } },
+      },
+    });
 
-    rankings.forEach((style) => {
-      style.curationCount = style.curation ? style.curation.length : 0;
-      style.viewCount = style.viewCount || 0;
+    rankings.forEach((ranking) => {
+      const style = styles.find((s) => s.id === ranking.styleId);
+      if (style) {
+        ranking.tags = style.tags.map((tag) => tag.tagname);
+        style.curationCount = style.curation ? style.curation.length : 0;
+        style.viewCount = style.viewCount || 0;
+      }
     });
 
     const orderByOptions = {

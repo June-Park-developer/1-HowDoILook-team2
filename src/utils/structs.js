@@ -41,3 +41,11 @@ export const ValidQuery = s.object({
 export const Password = s.object({
   password: pwPattern,
 });
+
+export const ValidTagname = s.refine(s.string(), "ValidTagname", (value) => {
+  return /^[a-zA-Z0-9가-힣]{1,20}$/.test(value);
+});
+
+export const TagQuery = s.object({
+  tagname: ValidTagname,
+});
