@@ -9,20 +9,30 @@ const IntegerBetween1And10 = s.define(
   isIntegerBetween1And10
 );
 
+const CategoryStruct = s.optional({
+  name: s.size(s.string(), 1, 20),
+  brand: s.size(s.string(), 1, 20),
+  price: IntegerBetween1And10,
+});
+
 export const CreateStyle = s.object({
-  title: s.size(s.string(), 1, 50),
-  description: s.optional(s.size(s.string(), 0, 255)),
-  color: s.pattern(s.string(), /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/),
+  nickname: s.size(s.string(), 1, 20),
+  title: s.size(s.string(), 1, 20),
+  content: s.size(s.string(), 1, 20),
+  categories: s.optional({
+    top: CategoryStruct,
+    bottom: CategoryStruct,
+    outer: CategoryStruct,
+    dress: CategoryStruct,
+    shoes: CategoryStruct,
+    bag: CategoryStruct,
+    accessory: CategoryStruct,
+  }),
+  imageUrls: [s.size(s.string(), 1, 20)],
+  password: pwPattern,
 });
 
 export const PatchStyle = s.partial(CreateStyle);
-
-export const CreateProduct = s.object({
-  name: s.size(s.string(), 1, 100),
-  description: s.optional(s.size(s.string(), 0, 500)),
-  price: s.min(s.number(), 0),
-  category: s.size(s.string(), 1, 50),
-});
 
 export const CreateCuration = s.object({
   nickname: s.size(s.string(), 1, 20),
