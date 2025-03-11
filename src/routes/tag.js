@@ -7,7 +7,7 @@ import { TagQuery } from "../utils/structs.js";
 const tagRouter = express.Router();
 
 tagRouter.get(
-  "/tags",
+  "/",
   asyncHandler(async (req, res) => {
     const popularTags = await prisma.tag.findMany({
       include: { _count: { select: { styles: true } } },
@@ -25,7 +25,7 @@ tagRouter.get(
 );
 
 tagRouter.get(
-  "/tags/:tagname",
+  "/:tagname",
   asyncHandler(async (req, res) => {
     assert(req.params, TagQuery);
     const { tagname } = req.params;
@@ -46,7 +46,7 @@ tagRouter.get(
 );
 
 tagRouter.post(
-  "/tags",
+  "/",
   asyncHandler(async (req, res) => {
     assert(req.body, TagQuery);
 
@@ -68,7 +68,7 @@ tagRouter.post(
 );
 
 tagRouter.delete(
-  "/tags/:tagname",
+  "/:tagname",
   asyncHandler(async (req, res) => {
     assert(req.params, TagQuery);
 
