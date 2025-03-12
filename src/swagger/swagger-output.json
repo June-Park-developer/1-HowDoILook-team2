@@ -2128,21 +2128,24 @@
       "get": {
         "tags": ["태그"],
         "summary": "태그 목록 조회",
-        "description": "시스템에 저장된 모든 태그 목록을 조회합니다. 이 API는 태그들의 이름을 반환합니다.",
+        "description": "스타일과 연결된 태그 중 인기 태그 10개를 조회합니다.",
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tags": {
-                      "type": "array",
-                      "description": "시스템에 저장된 태그 목록",
-                      "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tagname": {
                         "type": "string",
-                        "description": "태그 이름"
+                        "example": "casual"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "example": 120
                       }
                     }
                   }
@@ -2156,25 +2159,25 @@
         "tags": ["태그"],
         "summary": "태그 생성",
         "description": "새로운 태그를 시스템에 추가합니다. 태그 이름을 제공하여 시스템에 등록합니다.",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "생성할 태그의 이름",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "tagname": {
-                  "type": "string",
-                  "description": "새로운 태그의 이름",
-                  "example": "tech"
-                }
-              },
-              "required": ["tagname"]
+        "requestBody": {
+          "required": true,
+          "description": "생성할 태그의 이름",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tagname": {
+                    "type": "string",
+                    "description": "새로운 태그의 이름",
+                    "example": "tech"
+                  }
+                },
+                "required": ["tagname"]
+              }
             }
           }
-        ],
+        },
         "responses": {
           "201": {
             "description": "Created",
@@ -2183,22 +2186,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "tagname": {
                       "type": "string",
-                      "description": "태그가 성공적으로 생성되었습니다."
-                    },
-                    "tag": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer",
-                          "description": "태그의 고유 ID"
-                        },
-                        "tagname": {
-                          "type": "string",
-                          "description": "태그 이름"
-                        }
-                      }
+                      "example": "tech"
                     }
                   }
                 }
@@ -2206,7 +2196,7 @@
             }
           },
           "409": {
-            "description": "Conflict",
+            "description": "Conflict (이미 존재하는 태그의 경우)",
             "content": {
               "application/json": {
                 "schema": {
@@ -2214,7 +2204,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "이미 존재하는 태그 이름입니다."
+                      "example": "이미 존재하는 태그입니다."
                     }
                   }
                 }
@@ -2227,32 +2217,134 @@
     "/tags/{tagname}": {
       "get": {
         "tags": ["태그"],
-        "summary": "태그 조회",
-        "description": "특정 태그에 대한 정보를 조회합니다. 태그 이름을 제공하여 해당 태그를 조회합니다.",
+        "summary": "특정 태그의 스타일 조회",
+        "description": "지정된 태그명을 포함하는 스타일 목록을 조회합니다.",
         "parameters": [
           {
             "name": "tagname",
             "in": "path",
             "required": true,
-            "type": "string",
-            "description": "조회할 태그 이름"
+            "description": "조회할 태그의 이름",
+            "schema": {
+              "type": "string",
+              "example": "casual"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer", "example": 0 },
+                      "title": {
+                        "type": "string",
+                        "example": "캐주얼 데일리룩"
+                      },
+                      "nickname": {
+                        "type": "string",
+                        "example": "fashionista01"
+                      },
+                      "password": { "type": "string", "example": "pass1234" },
+                      "content": {
+                        "type": "string",
+                        "example": "편안한 캐주얼 스타일이에요!"
+                      },
+                      "imageUrls": {
+                        "type": "array",
+                        "items": { "type": "string", "format": "uri" },
+                        "example": [
+                          "https://example.com/style1-1.jpg",
+                          "https://example.com/style1-2.jpg"
+                        ]
+                      },
+                      "viewCount": { "type": "integer", "example": 120 },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-02-01T12:00:00.000Z"
+                      },
+                      "categories": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer", "example": 28 },
+                            "type": { "type": "string", "example": "TOP" },
+                            "name": {
+                              "type": "string",
+                              "example": "화이트 오버핏 티셔츠"
+                            },
+                            "brand": { "type": "string", "example": "Uniqlo" },
+                            "price": { "type": "number", "example": 29.99 },
+                            "styleId": { "type": "integer", "example": 0 }
+                          }
+                        }
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "tagname": { "type": "string", "example": "casual" }
+                          }
+                        }
+                      },
+                      "curations": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer", "example": 0 },
+                            "nickname": {
+                              "type": "string",
+                              "example": "닉네임"
+                            },
+                            "password": {
+                              "type": "string",
+                              "example": "review123"
+                            },
+                            "content": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "trendy": { "type": "integer", "example": 10 },
+                            "personality": { "type": "integer", "example": 0 },
+                            "practicality": { "type": "integer", "example": 0 },
+                            "costEffectiveness": {
+                              "type": "integer",
+                              "example": 0
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2024-02-02T13:00:00.000Z"
+                            },
+                            "styleId": { "type": "integer", "example": 0 }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 (태그명이 올바르지 않거나 존재하지 않음)",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "tagname": {
+                    "error": {
                       "type": "string",
-                      "description": "태그 이름"
-                    },
-                    "id": {
-                      "type": "integer",
-                      "description": "태그의 고유 ID"
+                      "example": "Invalid tag name"
                     }
                   }
                 }
@@ -2264,35 +2356,25 @@
       "delete": {
         "tags": ["태그"],
         "summary": "태그 삭제",
-        "description": "특정 태그를 시스템에서 삭제합니다. 태그 이름을 제공하여 해당 태그를 삭제합니다.",
+        "description": "특정 태그를 삭제합니다. 단, 사용 중인 태그는 삭제할 수 없습니다.",
         "parameters": [
           {
             "name": "tagname",
             "in": "path",
             "required": true,
-            "type": "string",
-            "description": "삭제할 태그 이름"
+            "description": "삭제할 태그의 이름",
+            "schema": {
+              "type": "string"
+            },
+            "example": "casual"
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "태그가 성공적으로 삭제되었습니다."
-                    }
-                  }
-                }
-              }
-            }
+            "description": "태그 삭제 성공 (No Content)"
           },
           "400": {
-            "description": "Bad Request",
+            "description": "현재 사용 중인 태그는 삭제할 수 없음",
             "content": {
               "application/json": {
                 "schema": {
@@ -2300,7 +2382,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다."
+                      "example": "현재 사용 중인 태그는 삭제할 수 없습니다."
                     }
                   }
                 }
@@ -2308,7 +2390,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "존재하지 않는 태그",
             "content": {
               "application/json": {
                 "schema": {
@@ -2316,7 +2398,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "삭제하려는 태그가 존재하지 않습니다."
+                      "example": "존재하지 않는 태그입니다."
                     }
                   }
                 }
