@@ -9,26 +9,43 @@ const IntegerBetween1And10 = s.define(
   isIntegerBetween1And10
 );
 
-const CategoryStruct = s.optional({
-  name: s.size(s.string(), 1, 20),
-  brand: s.size(s.string(), 1, 20),
-  price: IntegerBetween1And10,
+export const OrOverZeroString = s.refine(
+  s.string(),
+  "OrOverZeroString",
+  (value) => {
+    const num = Number(value);
+    return Number.isInteger(num) && num >= 0;
+  }
+);
+
+const OrOverZeroInteger = s.refine(s.number(), "OrOverZeroInteger", (value) => {
+  return Number.isInteger(value) && value >= 0;
 });
+
+const CategoryStruct = s.optional(
+  s.object({
+    name: s.size(s.string(), 1, 20),
+    brand: s.size(s.string(), 1, 20),
+    price: OrOverZeroInteger,
+  })
+);
 
 export const CreateStyle = s.object({
   nickname: s.size(s.string(), 1, 20),
   title: s.size(s.string(), 1, 20),
   content: s.size(s.string(), 1, 20),
-  categories: s.optional({
-    top: CategoryStruct,
-    bottom: CategoryStruct,
-    outer: CategoryStruct,
-    dress: CategoryStruct,
-    shoes: CategoryStruct,
-    bag: CategoryStruct,
-    accessory: CategoryStruct,
-  }),
-  imageUrls: [s.size(s.string(), 1, 20)],
+  categories: s.optional(
+    s.object({
+      top: CategoryStruct,
+      bottom: CategoryStruct,
+      outer: CategoryStruct,
+      dress: CategoryStruct,
+      shoes: CategoryStruct,
+      bag: CategoryStruct,
+      accessory: CategoryStruct,
+    })
+  ),
+  imageUrls: s.array(s.size(s.string(), 1, 20)),
   password: pwPattern,
 });
 
@@ -60,16 +77,13 @@ export const PositiveInteger = s.refine(
   }
 );
 
-export const OrOverZero = s.refine(s.string(), "OrOverZero", (value) => {
-  const num = Number(value);
-  return Number.isInteger(num) && num >= 0;
-});
-
 export const ValidQuery = s.object({
   page: PositiveInteger,
   pageSize: PositiveInteger,
   searchBy: s.optional(s.string()),
   keyword: s.optional(s.string()),
+  sortBy: s.optional(s.string()),
+  tag: s.optional(s.string()),
 });
 
 export const OptionalQuery = s.partial(ValidQuery);
