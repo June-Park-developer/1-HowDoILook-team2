@@ -1,293 +1,21 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.0",
   "info": {
     "title": "2팀-How Do I Look",
     "description": "이 프로젝트는 코드잇 Node.js 백엔드 스프린트의 초급 팀 프로젝트입니다.",
     "version": "1.0.0"
   },
-  "host": "localhost:3000",
   "servers": [
     {
-      "url": "http://localhost:undefined"
+      "url": "http://localhost:3000"
     }
   ],
   "basePath": "/",
   "schemes": ["http"],
   "paths": {
-    "/styles/{styleId}/curations": {
-      "get": {
-        "tags": ["/styles"],
-        "summary": "큐레이팅 목록 조회",
-        "description": "- 스타일을 조회할 경우 그 스타일에 해당되는 큐레이팅 목록이 같이 조회됩니다.\n- 각 큐레이팅의 트렌디, 개성, 실용성, 가성비 점수와 한줄 큐레이팅, 닉네임이 표시됩니다.\n- 닉네임, 내용으로 검색이 가능합니다.\n- 큐레이팅에 남겨진 답글도 같이 조회됩니다.",
-        "parameters": [
-          {
-            "name": "styleId",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "number (스타일 ID)"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "string",
-            "description": "number (현재 페이지 번호)"
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "type": "string",
-            "description": "number (페이지당 아이템 수)"
-          },
-          {
-            "name": "searchBy",
-            "in": "query",
-            "type": "string",
-            "description": "nickname | content (검색 기준)"
-          },
-          {
-            "name": "keyword",
-            "in": "query",
-            "type": "string",
-            "description": "string (검색어)"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK (성공)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "currentPage": {
-                      "type": "integer",
-                      "description": "현재 페이지 번호"
-                    },
-                    "totalPages": {
-                      "type": "integer",
-                      "description": "전체 페이지 수"
-                    },
-                    "totalItemCount": {
-                      "type": "integer",
-                      "description": "전체 아이템 수"
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer",
-                            "description": "아이템 ID"
-                          },
-                          "nickname": {
-                            "type": "string",
-                            "description": "닉네임"
-                          },
-                          "content": {
-                            "type": "string",
-                            "description": "내용"
-                          },
-                          "trendy": {
-                            "type": "integer",
-                            "description": "트렌디 점수"
-                          },
-                          "personality": {
-                            "type": "integer",
-                            "description": "개성 점수"
-                          },
-                          "practicality": {
-                            "type": "integer",
-                            "description": "실용성 점수"
-                          },
-                          "costEffectiveness": {
-                            "type": "integer",
-                            "description": "비용 효율성 점수"
-                          },
-                          "createdAt": {
-                            "type": "string",
-                            "format": "date-time",
-                            "description": "생성 일시"
-                          },
-                          "comment": {
-                            "type": "object",
-                            "properties": {
-                              "id": {
-                                "type": "integer",
-                                "description": "댓글 ID"
-                              },
-                              "nickname": {
-                                "type": "string",
-                                "description": "댓글 작성자의 닉네임"
-                              },
-                              "content": {
-                                "type": "string",
-                                "description": "댓글 내용"
-                              },
-                              "createdAt": {
-                                "type": "string",
-                                "format": "date-time",
-                                "description": "댓글 생성 일시"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (요청 양식 오류)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "잘못된 요청입니다"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["/styles"],
-        "summary": "큐레이팅 등록",
-        "description": "- 새로운 큐레이팅을 등록하는 API입니다.\n- `styleId`는 필수로 입력되어야 합니다.\n- 요청 본문에 `nickname`, `content`, `password`, 점수 관련 항목을 포함해야 합니다.",
-        "parameters": [
-          {
-            "name": "styleId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "스타일 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "nickname": {
-                  "type": "string",
-                  "description": "큐레이팅을 등록하는 사용자의 닉네임"
-                },
-                "content": {
-                  "type": "string",
-                  "description": "큐레이팅의 본문 내용"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "큐레이팅 작성자의 비밀번호",
-                  "example": "password911"
-                },
-                "trendy": {
-                  "type": "integer",
-                  "description": "큐레이팅의 트렌디 점수"
-                },
-                "personality": {
-                  "type": "integer",
-                  "description": "큐레이팅의 개성 점수"
-                },
-                "practicality": {
-                  "type": "integer",
-                  "description": "큐레이팅의 실용성 점수"
-                },
-                "costEffectiveness": {
-                  "type": "integer",
-                  "description": "큐레이팅의 비용 효율성 점수"
-                }
-              },
-              "required": [
-                "nickname",
-                "content",
-                "password",
-                "trendy",
-                "personality",
-                "practicality",
-                "costEffectiveness"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK (성공)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer",
-                      "description": "큐레이팅의 고유 ID"
-                    },
-                    "nickname": {
-                      "type": "string",
-                      "description": "큐레이팅을 등록한 사용자의 닉네임"
-                    },
-                    "content": {
-                      "type": "string",
-                      "description": "큐레이팅의 본문 내용"
-                    },
-                    "trendy": {
-                      "type": "integer",
-                      "description": "큐레이팅의 트렌디 점수"
-                    },
-                    "personality": {
-                      "type": "integer",
-                      "description": "큐레이팅의 개성 점수"
-                    },
-                    "practicality": {
-                      "type": "integer",
-                      "description": "큐레이팅의 실용성 점수"
-                    },
-                    "costEffectiveness": {
-                      "type": "integer",
-                      "description": "큐레이팅의 비용 효율성 점수"
-                    },
-                    "createdAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "description": "큐레이팅의 생성 일시"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request (요청 양식 오류)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "잘못된 요청입니다"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/styles/{styleId}": {
       "get": {
-        "tags": ["/styles"],
+        "tags": ["스타일"],
         "summary": "스타일 상세 정보 조회",
         "description": "- 스타일 ID를 통해 스타일의 상세 정보를 조회하는 API입니다.\n- `styleId`는 필수로 입력되어야 하며, 요청 본문 없이 스타일 정보만 조회합니다.",
         "parameters": [
@@ -295,8 +23,10 @@
             "name": "styleId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "스타일 ID"
+            "schema": {
+              "type": "integer"
+            },
+            "description": "스타일 ID (0이상의 정수)"
           }
         ],
         "responses": {
@@ -397,7 +127,7 @@
             }
           },
           "400": {
-            "description": "Bad Request (요청 양식 오류)",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -405,7 +135,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -415,7 +145,7 @@
         }
       },
       "put": {
-        "tags": ["/styles"],
+        "tags": ["스타일"],
         "summary": "스타일 수정",
         "description": "- 스타일 ID를 통해 스타일 정보를 수정하는 API입니다.\n- `styleId`는 필수로 입력되어야 하며, 수정할 스타일 정보를 포함하는 요청 본문이 필요합니다.",
         "parameters": [
@@ -423,187 +153,191 @@
             "name": "styleId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "스타일 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
-            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "nickname": {
-                  "type": "string",
-                  "description": "스타일을 수정하는 사용자의 닉네임"
-                },
-                "title": {
-                  "type": "string",
-                  "description": "스타일의 제목"
-                },
-                "content": {
-                  "type": "string",
-                  "description": "스타일의 본문 내용"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "스타일 작성자의 비밀번호",
-                  "example": "password911"
-                },
-                "categories": {
-                  "type": "object",
-                  "properties": {
-                    "top": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "상의 아이템의 이름"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "description": "상의 아이템의 브랜드"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "description": "상의 아이템의 가격"
+              "type": "integer"
+            },
+            "description": "스타일 ID (0 이상의 정수)"
+          }
+        ],
+        "requestBody": {
+          "description": "비밀번호는 영문, 숫자 조합 8~16자",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string",
+                    "description": "스타일을 수정하는 사용자의 닉네임"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "스타일의 제목"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "스타일의 본문 내용"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "스타일 작성자의 비밀번호",
+                    "example": "password911"
+                  },
+                  "categories": {
+                    "type": "object",
+                    "properties": {
+                      "top": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "상의 아이템의 이름"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "description": "상의 아이템의 브랜드"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "description": "상의 아이템의 가격"
+                          }
                         }
-                      }
-                    },
-                    "bottom": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "하의 아이템의 이름"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "description": "하의 아이템의 브랜드"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "description": "하의 아이템의 가격"
+                      },
+                      "bottom": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "하의 아이템의 이름"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "description": "하의 아이템의 브랜드"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "description": "하의 아이템의 가격"
+                          }
                         }
-                      }
-                    },
-                    "outer": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "아우터 아이템의 이름"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "description": "아우터 아이템의 브랜드"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "description": "아우터 아이템의 가격"
+                      },
+                      "outer": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "아우터 아이템의 이름"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "description": "아우터 아이템의 브랜드"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "description": "아우터 아이템의 가격"
+                          }
                         }
-                      }
-                    },
-                    "dress": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "드레스 아이템의 이름"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "description": "드레스 아이템의 브랜드"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "description": "드레스 아이템의 가격"
+                      },
+                      "dress": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "드레스 아이템의 이름"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "description": "드레스 아이템의 브랜드"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "description": "드레스 아이템의 가격"
+                          }
                         }
-                      }
-                    },
-                    "shoes": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "신발 아이템의 이름"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "description": "신발 아이템의 브랜드"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "description": "신발 아이템의 가격"
+                      },
+                      "shoes": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "신발 아이템의 이름"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "description": "신발 아이템의 브랜드"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "description": "신발 아이템의 가격"
+                          }
                         }
-                      }
-                    },
-                    "bag": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "가방 아이템의 이름"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "description": "가방 아이템의 브랜드"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "description": "가방 아이템의 가격"
+                      },
+                      "bag": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "가방 아이템의 이름"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "description": "가방 아이템의 브랜드"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "description": "가방 아이템의 가격"
+                          }
                         }
-                      }
-                    },
-                    "accessory": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "description": "액세서리 아이템의 이름"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "description": "액세서리 아이템의 브랜드"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "description": "액세서리 아이템의 가격"
+                      },
+                      "accessory": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "액세서리 아이템의 이름"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "description": "액세서리 아이템의 브랜드"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "description": "액세서리 아이템의 가격"
+                          }
                         }
                       }
                     }
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "스타일과 관련된 태그들"
+                    },
+                    "description": "스타일의 관련 태그"
+                  },
+                  "imageUrls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "스타일에 포함된 이미지 URL"
+                    },
+                    "description": "스타일 이미지 URLs"
                   }
                 },
-                "tags": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "description": "스타일과 관련된 태그들"
-                  },
-                  "description": "스타일의 관련 태그"
-                },
-                "imageUrls": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "description": "스타일에 포함된 이미지 URL"
-                  },
-                  "description": "스타일 이미지 URLs"
-                }
-              },
-              "required": [
-                "nickname",
-                "title",
-                "content",
-                "password",
-                "categories",
-                "tags",
-                "imageUrls"
-              ]
+                "required": [
+                  "nickname",
+                  "title",
+                  "content",
+                  "password",
+                  "categories",
+                  "tags",
+                  "imageUrls"
+                ]
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "OK (성공)",
@@ -752,7 +486,7 @@
         }
       },
       "delete": {
-        "tags": ["/styles"],
+        "tags": ["스타일"],
         "summary": "스타일 삭제",
         "description": "- 스타일 ID를 통해 스타일을 삭제하는 API입니다.\n- `styleId`는 필수로 입력되어야 하며, 요청 본문에 비밀번호를 포함해야 합니다.",
         "parameters": [
@@ -851,7 +585,7 @@
     },
     "/styles/ranking": {
       "get": {
-        "tags": ["/styles"],
+        "tags": ["스타일"],
         "summary": "스타일 랭킹 조회",
         "description": "- 랭킹을 기준으로 스타일을 조회하는 API입니다.\n- `sort`, `page`, `pageSize` 파라미터를 통해 랭킹 정렬 방식, 페이지 번호, 페이지당 항목 수를 조정할 수 있습니다.",
         "parameters": [
@@ -941,7 +675,7 @@
     },
     "/styles/": {
       "get": {
-        "tags": ["/styles"],
+        "tags": ["스타일"],
         "summary": "스타일 목록 조회",
         "description": "- 스타일 목록을 조회하는 API입니다.\n- 다양한 필터링과 정렬 기준을 제공하며, 검색 및 태그로 스타일을 필터링할 수 있습니다.",
         "parameters": [
@@ -1144,7 +878,7 @@
         }
       },
       "post": {
-        "tags": ["/styles"],
+        "tags": ["스타일"],
         "summary": "스타일 등록",
         "description": "- 새로운 스타일을 등록하는 API입니다.\n- 스타일의 기본 정보, 카테고리, 태그, 이미지 URL 등을 포함하여 스타일을 등록할 수 있습니다.",
         "parameters": [
@@ -1454,9 +1188,312 @@
         }
       }
     },
+    "/styles/{styleId}/curations": {
+      "get": {
+        "tags": ["큐레이션"],
+        "summary": "큐레이션 목록 조회",
+        "description": "- 스타일을 조회할 경우 그 스타일에 해당되는 큐레이션 목록이 같이 조회됩니다.\n- 각 큐레이션의 트렌디, 개성, 실용성, 가성비 점수와 한줄 큐레이팅, 닉네임이 표시됩니다.\n- 닉네임, 내용으로 검색이 가능합니다.\n- 큐레이팅에 남겨진 답글도 같이 조회됩니다.",
+        "parameters": [
+          {
+            "name": "styleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "스타일 ID (0 이상의 정수)"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "현재 페이지 번호 (1 이상의 정수)"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "페이지당 아이템 수 (1 이상의 정수)"
+          },
+          {
+            "name": "searchBy",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "검색 기준 (nickname | content)"
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "검색어"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK (성공)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "currentPage": {
+                      "type": "integer",
+                      "description": "현재 페이지 번호",
+                      "example": 1
+                    },
+                    "totalPages": {
+                      "type": "integer",
+                      "description": "전체 페이지 수",
+                      "example": 10
+                    },
+                    "totalItemCount": {
+                      "type": "integer",
+                      "description": "전체 아이템 수",
+                      "example": 100
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "큐레이션 ID",
+                            "example": 1
+                          },
+                          "nickname": {
+                            "type": "string",
+                            "description": "닉네임",
+                            "example": "큐레이션 작성자"
+                          },
+                          "content": {
+                            "type": "string",
+                            "description": "내용",
+                            "example": "큐레이션 작성자"
+                          },
+                          "trendy": {
+                            "type": "integer",
+                            "description": "트렌디 점수",
+                            "example": 10
+                          },
+                          "personality": {
+                            "type": "integer",
+                            "description": "개성 점수",
+                            "example": 7
+                          },
+                          "practicality": {
+                            "type": "integer",
+                            "description": "실용성 점수",
+                            "example": 9
+                          },
+                          "costEffectiveness": {
+                            "type": "integer",
+                            "description": "비용 효율성 점수",
+                            "example": 8
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "생성 일시",
+                            "example": "2025-03-10T09:30:00Z"
+                          },
+                          "comment": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "댓글 ID",
+                                "example": 2
+                              },
+                              "nickname": {
+                                "type": "string",
+                                "description": "스타일 및 댓글 작성자의 닉네임",
+                                "example": "원작성자"
+                              },
+                              "content": {
+                                "type": "string",
+                                "description": "댓글 내용",
+                                "example": "평가 고맙습니다"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "댓글 생성 일시",
+                                "example": "2025-03-10T09:30:00Z"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "잘못된 요청입니다"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["큐레이션"],
+        "summary": "큐레이션 등록",
+        "description": "- 새로운 큐레이션을 등록하는 API입니다.\n- `styleId`는 필수로 입력되어야 합니다.\n- 요청 본문에 `nickname`, `content`, `password`, 점수 관련 항목을 포함해야 합니다.",
+        "parameters": [
+          {
+            "name": "styleId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "스타일 ID (0 이상의 정수)"
+          }
+        ],
+        "requestBody": {
+          "description": "비밀번호는 영문, 숫자 조합 8~16자",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string",
+                    "description": "큐레이션을 등록하는 사용자의 닉네임"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "큐레이션의 본문 내용"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "큐레이션 작성 시의 비밀번호",
+                    "example": "password911"
+                  },
+                  "trendy": {
+                    "type": "integer",
+                    "description": "큐레이션의 트렌디 점수 (0~10 사이의 정수)"
+                  },
+                  "personality": {
+                    "type": "integer",
+                    "description": "큐레이션의 개성 점수 (0~10 사이의 정수)"
+                  },
+                  "practicality": {
+                    "type": "integer",
+                    "description": "큐레이션의 실용성 점수 (0~10 사이의 정수)"
+                  },
+                  "costEffectiveness": {
+                    "type": "integer",
+                    "description": "큐레이션의 비용 효율성 점수 ((0~10 사이의 정수)"
+                  }
+                },
+                "required": [
+                  "nickname",
+                  "content",
+                  "password",
+                  "trendy",
+                  "personality",
+                  "practicality",
+                  "costEffectiveness"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "OK (성공)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "큐레이션의 고유 ID",
+                      "example": 123
+                    },
+                    "nickname": {
+                      "type": "string",
+                      "description": "큐레이션을 등록한 사용자의 닉네임"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "큐레이션의 본문 내용"
+                    },
+                    "trendy": {
+                      "type": "integer",
+                      "description": "큐레이션의 트렌디 점수"
+                    },
+                    "personality": {
+                      "type": "integer",
+                      "description": "큐레이션의 개성 점수"
+                    },
+                    "practicality": {
+                      "type": "integer",
+                      "description": "큐레이션의 실용성 점수"
+                    },
+                    "costEffectiveness": {
+                      "type": "integer",
+                      "description": "큐레이션의 비용 효율성 점수"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "큐레이션의 생성 일시"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "잘못된 요청입니다",
+                      "example": "잘못된 요청입니다"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     "/comments/{commentId}": {
       "put": {
-        "tags": ["/comments"],
+        "tags": ["답글"],
         "summary": "답글 수정",
         "description": "- 답글의 내용을 수정하는 API입니다.\n- `commentId`는 수정할 답글의 ID입니다.\n- 요청 본문에 `content`와 `password`를 포함해야 하며, 비밀번호가 맞지 않으면 오류가 발생합니다.",
         "parameters": [
@@ -1464,30 +1501,33 @@
             "name": "commentId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "답글 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "content": {
-                  "type": "string",
-                  "description": "수정할 답글 내용"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "답글 작성자의 비밀번호"
-                }
-              },
-              "required": ["content", "password"]
-            }
+            "schema": { "type": "integer" },
+            "description": "답글 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "description": "답글을 작성할 때 입력했던 비밀번호가 필요합니다",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "수정할 답글 내용"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "답글 작성자의 비밀번호",
+                    "example": "password911"
+                  }
+                },
+                "required": ["content", "password"]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK (성공)",
@@ -1527,7 +1567,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -1543,7 +1583,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "비밀번호가 틀렸습니다"
+                      "example": "비밀번호가 틀렸습니다"
                     }
                   }
                 }
@@ -1559,7 +1599,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "존재하지 않습니다"
+                      "example": "존재하지 않습니다"
                     }
                   }
                 }
@@ -1569,7 +1609,7 @@
         }
       },
       "delete": {
-        "tags": ["/comments"],
+        "tags": ["답글"],
         "summary": "답글 삭제",
         "description": "- 답글을 삭제하는 API입니다.\n- `commentId`는 삭제할 답글의 ID입니다.\n- 요청 본문에 비밀번호를 포함해야 하며, 비밀번호가 틀리면 삭제가 불가능합니다.",
         "parameters": [
@@ -1577,26 +1617,29 @@
             "name": "commentId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "답글 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "password": {
-                  "type": "string",
-                  "description": "답글 작성자의 비밀번호"
-                }
-              },
-              "required": ["password"]
-            }
+            "schema": { "type": "integer" },
+            "description": "답글 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "description": "답글을 작성할 때 입력했던 비밀번호가 필요합니다",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "답글 작성자의 비밀번호",
+                    "example": "password911"
+                  }
+                },
+                "required": ["password"]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK (성공)",
@@ -1607,7 +1650,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "답글 삭제 성공 메시지"
+                      "example": "답글 삭제 성공"
                     }
                   }
                 }
@@ -1623,7 +1666,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -1639,7 +1682,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "비밀번호가 틀렸습니다"
+                      "example": "비밀번호가 틀렸습니다"
                     }
                   }
                 }
@@ -1655,71 +1698,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "존재하지 않습니다"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/curations/average-scores": {
-      "get": {
-        "tags": ["/curations"],
-        "summary": "스타일 평균 점수 조회",
-        "description": "- 모든 스타일에 대해 `trendy`, `personality`, `practicality`, `costEffectiveness` 속성에 대한 평균 점수를 계산하여 반환하는 API입니다.\n- 또한, 각 스타일에 대해 전체 평균 점수도 함께 반환됩니다.",
-        "responses": {
-          "200": {
-            "description": "OK (성공)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "styleId": {
-                        "type": "integer",
-                        "description": "스타일의 ID",
-                        "example": 1
-                      },
-                      "avgScores": {
-                        "type": "object",
-                        "properties": {
-                          "trendy": {
-                            "type": "number",
-                            "format": "float",
-                            "description": "스타일의 트렌디 점수 평균",
-                            "example": 4.2
-                          },
-                          "personality": {
-                            "type": "number",
-                            "format": "float",
-                            "description": "스타일의 개성 점수 평균",
-                            "example": 4.5
-                          },
-                          "practicality": {
-                            "type": "number",
-                            "format": "float",
-                            "description": "스타일의 실용성 점수 평균",
-                            "example": 4.1
-                          },
-                          "costEffectiveness": {
-                            "type": "number",
-                            "format": "float",
-                            "description": "스타일의 비용 효율성 점수 평균",
-                            "example": 4.3
-                          }
-                        }
-                      },
-                      "total": {
-                        "type": "number",
-                        "format": "float",
-                        "description": "스타일의 전체 평균 점수",
-                        "example": 4.3
-                      }
+                      "example": "존재하지 않습니다"
                     }
                   }
                 }
@@ -1732,66 +1711,70 @@
 
     "/curations/{curationId}": {
       "put": {
-        "tags": ["/curations"],
-        "summary": "큐레이팅 수정",
-        "description": "- 큐레이팅을 수정하는 API입니다.\n- `curationId`는 수정할 큐레이팅의 ID입니다.\n- 수정하려면 비밀번호가 필요하며, 비밀번호가 틀리면 수정이 불가능합니다.",
+        "tags": ["큐레이션"],
+        "summary": "큐레이션 수정",
+        "description": "- 큐레이션을 수정하는 API입니다.\n- `curationId`는 수정할 큐레이션의 ID입니다.\n- 수정하려면 비밀번호가 필요하며, 비밀번호가 틀리면 수정이 불가능합니다.",
         "parameters": [
           {
             "name": "curationId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "큐레이팅 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
             "schema": {
-              "type": "object",
-              "properties": {
-                "nickname": {
-                  "type": "string",
-                  "description": "큐레이팅 작성자의 닉네임"
-                },
-                "content": {
-                  "type": "string",
-                  "description": "큐레이팅 내용"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "큐레이팅 작성자의 비밀번호"
-                },
-                "trendy": {
-                  "type": "integer",
-                  "description": "트렌디 점수"
-                },
-                "personality": {
-                  "type": "integer",
-                  "description": "개성 점수"
-                },
-                "practicality": {
-                  "type": "integer",
-                  "description": "실용성 점수"
-                },
-                "costEffectiveness": {
-                  "type": "integer",
-                  "description": "비용 효율성 점수"
-                }
-              },
-              "required": [
-                "nickname",
-                "content",
-                "password",
-                "trendy",
-                "personality",
-                "practicality",
-                "costEffectiveness"
-              ]
-            }
+              "type": "integer"
+            },
+            "description": "큐레이션 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "description": "큐레이션 작성 시의 비밀번호가 필요합니다",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string",
+                    "description": "큐레이션 작성자의 닉네임"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "큐레이션 내용"
+                  },
+                  "password": {
+                    "type": "password123",
+                    "description": "큐레이션 작성 했을 때의 비밀번호"
+                  },
+                  "trendy": {
+                    "type": "integer",
+                    "description": "트렌디 점수"
+                  },
+                  "personality": {
+                    "type": "integer",
+                    "description": "개성 점수"
+                  },
+                  "practicality": {
+                    "type": "integer",
+                    "description": "실용성 점수"
+                  },
+                  "costEffectiveness": {
+                    "type": "integer",
+                    "description": "비용 효율성 점수"
+                  }
+                },
+                "required": [
+                  "nickname",
+                  "content",
+                  "password",
+                  "trendy",
+                  "personality",
+                  "practicality",
+                  "costEffectiveness"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK (성공)",
@@ -1802,15 +1785,15 @@
                   "properties": {
                     "id": {
                       "type": "integer",
-                      "description": "큐레이팅 ID"
+                      "description": "큐레이션 ID"
                     },
                     "nickname": {
                       "type": "string",
-                      "description": "큐레이팅 작성자의 닉네임"
+                      "description": "큐레이션 작성자의 닉네임"
                     },
                     "content": {
                       "type": "string",
-                      "description": "큐레이팅 내용"
+                      "description": "큐레이션 내용"
                     },
                     "trendy": {
                       "type": "integer",
@@ -1831,7 +1814,7 @@
                     "createdAt": {
                       "type": "string",
                       "format": "date-time",
-                      "description": "큐레이팅 생성 일시"
+                      "description": "큐레이션 생성 일시"
                     }
                   }
                 }
@@ -1839,7 +1822,7 @@
             }
           },
           "400": {
-            "description": "Bad Request (요청 양식 오류)",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -1847,7 +1830,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -1863,7 +1846,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "비밀번호가 틀렸습니다"
+                      "example": "비밀번호가 틀렸습니다"
                     }
                   }
                 }
@@ -1871,7 +1854,7 @@
             }
           },
           "404": {
-            "description": "Not Found (큐레이팅 존재하지 않음)",
+            "description": "Not Found (큐레이션 존재하지 않음)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1879,7 +1862,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "존재하지 않습니다"
+                      "example": "존재하지 않습니다"
                     }
                   }
                 }
@@ -1889,34 +1872,39 @@
         }
       },
       "delete": {
-        "tags": ["/curations"],
-        "summary": "큐레이팅 삭제",
-        "description": "- 큐레이팅을 삭제하는 API입니다.\n- 삭제하려면 비밀번호가 필요하며, 비밀번호가 틀리면 삭제가 불가능합니다.",
+        "tags": ["큐레이션"],
+        "summary": "큐레이션 삭제",
+        "description": "- 큐레이션을 삭제하는 API입니다.\n- 삭제하려면 비밀번호가 필요하며, 비밀번호가 틀리면 삭제가 불가능합니다.",
         "parameters": [
           {
             "name": "curationId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "큐레이팅 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
             "schema": {
-              "type": "object",
-              "properties": {
-                "password": {
-                  "type": "string",
-                  "description": "큐레이팅 작성자의 비밀번호"
-                }
-              },
-              "required": ["password"]
-            }
+              "type": "integer"
+            },
+            "description": "큐레이션 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "description": "비밀번호는 영문, 숫자 조합 8~16자",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "큐레이션 작성자의 비밀번호",
+                    "example": "password123"
+                  }
+                },
+                "required": ["password"]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK (성공)",
@@ -1927,7 +1915,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "큐레이팅 삭제 성공"
+                      "example": "큐레이팅 삭제 성공"
                     }
                   }
                 }
@@ -1943,7 +1931,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -1959,7 +1947,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "비밀번호가 틀렸습니다"
+                      "example": "비밀번호가 틀렸습니다"
                     }
                   }
                 }
@@ -1967,7 +1955,7 @@
             }
           },
           "404": {
-            "description": "Not Found (큐레이팅 존재하지 않음)",
+            "description": "Not Found (큐레이션 존재하지 않음)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1975,7 +1963,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "존재하지 않습니다"
+                      "example": "존재하지 않습니다"
                     }
                   }
                 }
@@ -1987,40 +1975,45 @@
     },
     "/curations/{curationId}/comments": {
       "post": {
-        "tags": ["/curations"],
+        "tags": ["답글"],
         "summary": "답글 등록",
-        "description": "- 큐레이팅에 답글을 등록하는 API입니다.\n- 등록하려면 비밀번호가 필요하며, 비밀번호가 틀리면 등록이 불가능합니다.",
+        "description": "- 큐레이션에 답글을 등록하는 API입니다.\n- 등록하려면 비밀번호가 필요하며, 비밀번호가 틀리면 등록이 불가능합니다.",
         "parameters": [
           {
             "name": "curationId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "큐레이팅 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
             "schema": {
-              "type": "object",
-              "properties": {
-                "content": {
-                  "type": "string",
-                  "description": "답글 내용"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "큐레이팅 작성자의 비밀번호"
-                }
-              },
-              "required": ["content", "password"]
-            }
+              "type": "integer"
+            },
+            "description": "큐레이션 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "description": "스타일 게시글을 작성할 때 입력했던 비밀번호가 필요합니다.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "답글 내용"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "스타일 작성자의 비밀번호",
+                    "example": "password911"
+                  }
+                },
+                "required": ["content", "password"]
+              }
+            }
+          }
+        },
         "responses": {
-          "200": {
+          "201": {
             "description": "OK (성공)",
             "content": {
               "application/json": {
@@ -2050,7 +2043,7 @@
             }
           },
           "400": {
-            "description": "Bad Request (요청 양식 오류)",
+            "description": "Bad Request ",
             "content": {
               "application/json": {
                 "schema": {
@@ -2058,7 +2051,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -2068,30 +2061,34 @@
         }
       }
     },
-    "/images/": {
+    "/images": {
       "post": {
-        "tags": ["/images"],
-        "summary": "이미지 URL 생성",
-        "description": "- 이미지 파일을 업로드하고 해당 이미지의 URL을 반환하는 API입니다.",
-        "parameters": [
-          {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": "Content-Type 헤더는 multipart/form-data로 설정되어야 합니다."
-          },
-          {
-            "name": "image",
-            "in": "formData",
-            "required": true,
-            "description": "업로드할 이미지 파일, 용량 제한 5mb",
-            "type": "file"
+        "tags": ["이미지"],
+        "summary": "이미지 업로드",
+        "description": "이미지를 업로드하고, 다운로드 가능한 URL을 반환합니다. \n 원래 파일명을 보존하며, 파일 용량 제한은 5Mb 입니다.",
+        "consumes": ["multipart/form-data"],
+        "produces": ["application/json"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "업로드할 이미지 파일"
+                  }
+                },
+                "required": ["image"]
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "OK (성공)",
+            "description": "업로드 성공",
             "content": {
               "application/json": {
                 "schema": {
@@ -2099,7 +2096,25 @@
                   "properties": {
                     "imageUrl": {
                       "type": "string",
-                      "description": "업로드된 이미지의 URL"
+                      "format": "uri",
+                      "example": "http://localhost:3000/download/example.jpg",
+                      "description": "업로드된 이미지의 다운로드 URL"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 (예: 지원되지 않는 파일 형식)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -2111,23 +2126,26 @@
     },
     "/tags/": {
       "get": {
-        "tags": ["/tags"],
+        "tags": ["태그"],
         "summary": "태그 목록 조회",
-        "description": "시스템에 저장된 모든 태그 목록을 조회합니다. 이 API는 태그들의 이름을 반환합니다.",
+        "description": "스타일과 연결된 태그 중 인기 태그 10개를 조회합니다.",
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tags": {
-                      "type": "array",
-                      "description": "시스템에 저장된 태그 목록",
-                      "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tagname": {
                         "type": "string",
-                        "description": "태그 이름"
+                        "example": "casual"
+                      },
+                      "count": {
+                        "type": "integer",
+                        "example": 120
                       }
                     }
                   }
@@ -2138,28 +2156,28 @@
         }
       },
       "post": {
-        "tags": ["/tags"],
+        "tags": ["태그"],
         "summary": "태그 생성",
         "description": "새로운 태그를 시스템에 추가합니다. 태그 이름을 제공하여 시스템에 등록합니다.",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "생성할 태그의 이름",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "tagname": {
-                  "type": "string",
-                  "description": "새로운 태그의 이름",
-                  "example": "tech"
-                }
-              },
-              "required": ["tagname"]
+        "requestBody": {
+          "required": true,
+          "description": "생성할 태그의 이름",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tagname": {
+                    "type": "string",
+                    "description": "새로운 태그의 이름",
+                    "example": "tech"
+                  }
+                },
+                "required": ["tagname"]
+              }
             }
           }
-        ],
+        },
         "responses": {
           "201": {
             "description": "Created",
@@ -2168,22 +2186,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "tagname": {
                       "type": "string",
-                      "description": "태그가 성공적으로 생성되었습니다."
-                    },
-                    "tag": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer",
-                          "description": "태그의 고유 ID"
-                        },
-                        "tagname": {
-                          "type": "string",
-                          "description": "태그 이름"
-                        }
-                      }
+                      "example": "tech"
                     }
                   }
                 }
@@ -2191,7 +2196,7 @@
             }
           },
           "409": {
-            "description": "Conflict",
+            "description": "Conflict (이미 존재하는 태그의 경우)",
             "content": {
               "application/json": {
                 "schema": {
@@ -2199,7 +2204,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "이미 존재하는 태그 이름입니다."
+                      "example": "이미 존재하는 태그입니다."
                     }
                   }
                 }
@@ -2211,33 +2216,135 @@
     },
     "/tags/{tagname}": {
       "get": {
-        "tags": ["/tags"],
-        "summary": "태그 조회",
-        "description": "특정 태그에 대한 정보를 조회합니다. 태그 이름을 제공하여 해당 태그를 조회합니다.",
+        "tags": ["태그"],
+        "summary": "특정 태그의 스타일 조회",
+        "description": "지정된 태그명을 포함하는 스타일 목록을 조회합니다.",
         "parameters": [
           {
             "name": "tagname",
             "in": "path",
             "required": true,
-            "type": "string",
-            "description": "조회할 태그 이름"
+            "description": "조회할 태그의 이름",
+            "schema": {
+              "type": "string",
+              "example": "casual"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer", "example": 0 },
+                      "title": {
+                        "type": "string",
+                        "example": "캐주얼 데일리룩"
+                      },
+                      "nickname": {
+                        "type": "string",
+                        "example": "fashionista01"
+                      },
+                      "password": { "type": "string", "example": "pass1234" },
+                      "content": {
+                        "type": "string",
+                        "example": "편안한 캐주얼 스타일이에요!"
+                      },
+                      "imageUrls": {
+                        "type": "array",
+                        "items": { "type": "string", "format": "uri" },
+                        "example": [
+                          "https://example.com/style1-1.jpg",
+                          "https://example.com/style1-2.jpg"
+                        ]
+                      },
+                      "viewCount": { "type": "integer", "example": 120 },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-02-01T12:00:00.000Z"
+                      },
+                      "categories": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer", "example": 28 },
+                            "type": { "type": "string", "example": "TOP" },
+                            "name": {
+                              "type": "string",
+                              "example": "화이트 오버핏 티셔츠"
+                            },
+                            "brand": { "type": "string", "example": "Uniqlo" },
+                            "price": { "type": "number", "example": 29.99 },
+                            "styleId": { "type": "integer", "example": 0 }
+                          }
+                        }
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "tagname": { "type": "string", "example": "casual" }
+                          }
+                        }
+                      },
+                      "curations": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer", "example": 0 },
+                            "nickname": {
+                              "type": "string",
+                              "example": "닉네임"
+                            },
+                            "password": {
+                              "type": "string",
+                              "example": "review123"
+                            },
+                            "content": {
+                              "type": "string",
+                              "example": "string"
+                            },
+                            "trendy": { "type": "integer", "example": 10 },
+                            "personality": { "type": "integer", "example": 0 },
+                            "practicality": { "type": "integer", "example": 0 },
+                            "costEffectiveness": {
+                              "type": "integer",
+                              "example": 0
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2024-02-02T13:00:00.000Z"
+                            },
+                            "styleId": { "type": "integer", "example": 0 }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 (태그명이 올바르지 않거나 존재하지 않음)",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "tagname": {
+                    "error": {
                       "type": "string",
-                      "description": "태그 이름"
-                    },
-                    "id": {
-                      "type": "integer",
-                      "description": "태그의 고유 ID"
+                      "example": "Invalid tag name"
                     }
                   }
                 }
@@ -2247,37 +2354,27 @@
         }
       },
       "delete": {
-        "tags": ["/tags"],
+        "tags": ["태그"],
         "summary": "태그 삭제",
-        "description": "특정 태그를 시스템에서 삭제합니다. 태그 이름을 제공하여 해당 태그를 삭제합니다.",
+        "description": "특정 태그를 삭제합니다. 단, 사용 중인 태그는 삭제할 수 없습니다.",
         "parameters": [
           {
             "name": "tagname",
             "in": "path",
             "required": true,
-            "type": "string",
-            "description": "삭제할 태그 이름"
+            "description": "삭제할 태그의 이름",
+            "schema": {
+              "type": "string"
+            },
+            "example": "casual"
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "태그가 성공적으로 삭제되었습니다."
-                    }
-                  }
-                }
-              }
-            }
+            "description": "태그 삭제 성공 (No Content)"
           },
           "400": {
-            "description": "Bad Request",
+            "description": "현재 사용 중인 태그는 삭제할 수 없음",
             "content": {
               "application/json": {
                 "schema": {
@@ -2285,7 +2382,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다."
+                      "example": "현재 사용 중인 태그는 삭제할 수 없습니다."
                     }
                   }
                 }
@@ -2293,7 +2390,7 @@
             }
           },
           "404": {
-            "description": "Not Found",
+            "description": "존재하지 않는 태그",
             "content": {
               "application/json": {
                 "schema": {
@@ -2301,7 +2398,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "삭제하려는 태그가 존재하지 않습니다."
+                      "example": "존재하지 않는 태그입니다."
                     }
                   }
                 }
