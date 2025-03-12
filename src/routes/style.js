@@ -275,15 +275,44 @@ styleRouter
     asyncHandler(async (req, res) => {
       assert(req.body, CreateStyle);
 
+      const { tags = [], categories = {}, ...styleData } = req.body; // tags가 없으면 기본값 빈 배열
+
+      // categories 객체를 Prisma가 이해할 수 있도록 배열로 변환
+      const categoryList = Object.entries(categories).map(
+        ([type, category]) => ({
+          type: type.toUpperCase(), //enum 타입 대문자
+          name: category.name,
+          brand: category.brand,
+          price: category.price,
+        })
+      );
+
+      const tagRecords = await Promise.all(
+        tags.map(async (tagname) => {
+          return await prisma.tag.upsert({
+            where: { tagname },
+            update: {},
+            create: { tagname },
+          });
+        })
+      );
+
       const newStyle = await prisma.style.create({
-        data: { ...req.body },
+        data: {
+          ...styleData,
+          tags: {
+            connect: tagRecords.map((tag) => ({ tagname: tag.tagname })),
+          },
+          categories: {
+            create: categoryList, // Prisma에서 categories 삽입
+          },
+        },
         select: {
           id: true,
           password: true,
           content: true,
           createdAt: true,
-          //추가
-          viewcount: 0,
+          viewCount: true,
         },
       });
       res.status(201).json(newStyle);
