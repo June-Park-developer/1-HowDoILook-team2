@@ -27,7 +27,7 @@ export default function asyncHandler(handler) {
       } else if (e.name === "PasswordError") {
         res.status(403).send({ message: "비밀번호가 틀렸습니다" });
       } else {
-        res.status(500).send({ message: e.message });
+        res.status(500).send({ message: "서버의 에러입니다" });
       }
     }
   };
