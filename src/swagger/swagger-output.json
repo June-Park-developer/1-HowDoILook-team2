@@ -444,7 +444,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -460,7 +460,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "비밀번호가 틀렸습니다"
+                      "example": "비밀번호가 틀렸습니다"
                     }
                   }
                 }
@@ -476,7 +476,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "존재하지 않습니다"
+                      "example": "존재하지 않습니다"
                     }
                   }
                 }
@@ -881,189 +881,189 @@
         "tags": ["스타일"],
         "summary": "스타일 등록",
         "description": "- 새로운 스타일을 등록하는 API입니다.\n- 스타일의 기본 정보, 카테고리, 태그, 이미지 URL 등을 포함하여 스타일을 등록할 수 있습니다.",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "스타일 등록을 위한 필수 데이터",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "nickname": {
-                  "type": "string",
-                  "description": "스타일 작성자의 닉네임",
-                  "example": "string"
-                },
-                "title": {
-                  "type": "string",
-                  "description": "스타일 제목",
-                  "example": "string"
-                },
-                "content": {
-                  "type": "string",
-                  "description": "스타일 설명",
-                  "example": "string"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "스타일 작성자의 비밀번호",
-                  "example": "string"
-                },
-                "categories": {
-                  "type": "object",
-                  "properties": {
-                    "top": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "example": 0
-                        }
-                      }
-                    },
-                    "bottom": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "example": 1
-                        }
-                      }
-                    },
-                    "outer": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "example": 2
-                        }
-                      }
-                    },
-                    "dress": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "example": 3
-                        }
-                      }
-                    },
-                    "shoes": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "example": 4
-                        }
-                      }
-                    },
-                    "bag": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "example": 5
-                        }
-                      }
-                    },
-                    "accessory": {
-                      "type": "object",
-                      "properties": {
-                        "name": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "brand": {
-                          "type": "string",
-                          "example": "string"
-                        },
-                        "price": {
-                          "type": "integer",
-                          "example": 6
-                        }
-                      }
-                    }
-                  },
-                  "description": "스타일의 카테고리 정보"
-                },
-                "tags": {
-                  "type": "array",
-                  "items": {
+        "requestBody": {
+          "required": true,
+          "description": "비밀번호는 영문, 숫자 조합 8~16자",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
                     "type": "string",
+                    "description": "스타일 작성자의 닉네임",
                     "example": "string"
                   },
-                  "description": "스타일에 적용된 태그"
-                },
-                "imageUrls": {
-                  "type": "array",
-                  "items": {
+                  "title": {
                     "type": "string",
+                    "description": "스타일 제목",
                     "example": "string"
                   },
-                  "description": "스타일에 첨부된 이미지 URL"
-                }
-              },
-              "required": [
-                "nickname",
-                "title",
-                "content",
-                "password",
-                "categories",
-                "tags",
-                "imageUrls"
-              ]
+                  "content": {
+                    "type": "string",
+                    "description": "스타일 설명",
+                    "example": "string"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "스타일 작성자의 비밀번호",
+                    "example": "pass1234"
+                  },
+                  "categories": {
+                    "type": "object",
+                    "properties": {
+                      "top": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "example": 0
+                          }
+                        }
+                      },
+                      "bottom": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "example": 1
+                          }
+                        }
+                      },
+                      "outer": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "example": 2
+                          }
+                        }
+                      },
+                      "dress": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "example": 3
+                          }
+                        }
+                      },
+                      "shoes": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "example": 4
+                          }
+                        }
+                      },
+                      "bag": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "example": 5
+                          }
+                        }
+                      },
+                      "accessory": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "brand": {
+                            "type": "string",
+                            "example": "string"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "example": 6
+                          }
+                        }
+                      }
+                    },
+                    "description": "스타일의 카테고리 정보"
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "description": "스타일에 적용된 태그"
+                  },
+                  "imageUrls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "description": "스타일에 첨부된 이미지 URL"
+                  }
+                },
+                "required": [
+                  "nickname",
+                  "title",
+                  "content",
+                  "password",
+                  "categories",
+                  "tags",
+                  "imageUrls"
+                ]
+              }
             }
           }
-        ],
+        },
         "responses": {
           "201": {
             "description": "Created (성공)",

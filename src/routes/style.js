@@ -197,7 +197,7 @@ styleRouter
       await confirmPassword(modelName, styleId, password);
 
       const tagRecords = await Promise.all(
-        tags.map(async (tagname) => {
+        req.body.tags.map(async (tagname) => {
           return await prisma.tag.upsert({
             where: { tagname },
             update: {},
