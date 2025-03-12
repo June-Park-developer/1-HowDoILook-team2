@@ -7,13 +7,9 @@ import swaggerFile from "./swagger/swagger-output.json" with { type: "json" };
 
 import commentRouter from "./routes/comment.js";
 import curationRouter from "./routes/curating.js";
-<<<<<<< HEAD
-import styleRouter from "./routes/style.js";
-=======
 import imageRouter from "./routes/image.js";
 import styleRouter from "./routes/style.js";
 import tagRouter from "./routes/tag.js";
->>>>>>> 찬영-swagger
 
 dotenv.config();
 
@@ -22,10 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/styles", styleRouter);
-<<<<<<< HEAD
 
-=======
->>>>>>> 찬영-swagger
 app.use("/comments", commentRouter);
 app.use("/curations", curationRouter);
 

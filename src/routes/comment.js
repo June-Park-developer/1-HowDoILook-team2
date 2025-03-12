@@ -38,7 +38,7 @@ commentRouter
           createdAt: true,
         },
       });
-      res.send(comment);
+      res.json(comment);
     })
   )
   .delete(
@@ -50,7 +50,7 @@ commentRouter
       await prisma.comment.delete({
         where: { id: parseInt(commentId) },
       });
-      res.send({ message: "답글 삭제 성공" });
+      res.json({ message: "답글 삭제 성공" });
     })
   );
 
