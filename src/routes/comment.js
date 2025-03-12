@@ -1,7 +1,7 @@
 import express from "express";
 import asyncHandler from "../utils/asyncHandler.js";
 import { assert } from "superstruct";
-import { CreateComment, Password } from "../utils/structs.js";
+import { CreateComment, Password, OrOverZeroString } from "../utils/structs.js";
 import prisma from "../utils/prismaClient.js";
 import confirmPassword from "../utils/confirmPassword.js";
 
@@ -12,9 +12,9 @@ commentRouter
   .put(
     asyncHandler(async (req, res) => {
       const { commentId } = req.params;
+      assert(commentId, OrOverZeroString);
       assert(req.body, CreateComment);
       const { content, password } = req.body;
-
       const modelName = prisma.comment.getEntityName();
       await confirmPassword(modelName, commentId, password);
 
@@ -25,17 +25,32 @@ commentRouter
         },
         select: {
           id: true,
-          password: true,
+          curation: {
+            select: {
+              style: {
+                select: {
+                  nickname: true,
+                },
+              },
+            },
+          },
           content: true,
           createdAt: true,
         },
       });
-      res.json(comment);
+      const resultJson = {
+        id: comment.id,
+        nickname: comment.curation.style.nickname,
+        content: comment.content,
+        createdAt: comment.createdAt,
+      };
+      res.json(resultJson);
     })
   )
   .delete(
     asyncHandler(async (req, res) => {
       const { commentId } = req.params;
+      assert(commentId, OrOverZeroString);
       assert(req.body, Password);
       const { password } = req.body;
       const modelName = prisma.comment.getEntityName();
