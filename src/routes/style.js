@@ -69,7 +69,7 @@ styleRouter
       });
       const totalPages = Math.ceil(totalItemCount / pageSize);
       const currentPage = parseInt(page);
-      if (currentPage > totalPages) {
+      if (totalPages !== 0 && currentPage > totalPages) {
         const e = new Error();
         e.name = "BadQuery";
         throw e;
@@ -197,7 +197,7 @@ styleRouter
       await confirmPassword(modelName, styleId, password);
 
       const tagRecords = await Promise.all(
-        req.body.tags.map(async (tagname) => {
+        tags.map(async (tagname) => {
           return await prisma.tag.upsert({
             where: { tagname },
             update: {},
