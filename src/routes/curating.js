@@ -53,7 +53,11 @@ curationRouter
 curationRouter.route("/:curationId/comments").post(
   asyncHandler(async (req, res) => {
     const { curationId } = req.params;
+    assert(curationId, OrOverZeroString);
     assert(req.body, CreateComment);
+
+    const modelName = prisma.curation.getEntityName();
+    await confirmPassword(modelName, curationId, req.body.password);
 
     const comment = await prisma.comment.create({
       data: {
@@ -63,12 +67,26 @@ curationRouter.route("/:curationId/comments").post(
       },
       select: {
         id: true,
-        password: true,
+        curation: {
+          select: {
+            style: {
+              select: {
+                nickname: true,
+              },
+            },
+          },
+        },
         content: true,
         createdAt: true,
       },
     });
-    res.status(201).json(comment);
+    const resultJson = {
+      id: comment.id,
+      nickname: comment.curation.style.nickname,
+      content: comment.content,
+      createdAt: comment.createdAt,
+    };
+    res.status(201).json(resultJson);
   })
 );
 
