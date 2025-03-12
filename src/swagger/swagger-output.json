@@ -23,31 +23,41 @@
             "name": "styleId",
             "in": "path",
             "required": true,
-            "type": "integer",
+            "schema": {
+              "type": "integer"
+            },
             "description": "스타일 ID (0 이상의 정수)"
           },
           {
             "name": "page",
             "in": "query",
-            "type": "integer",
+            "schema": {
+              "type": "integer"
+            },
             "description": "현재 페이지 번호 (1 이상의 정수)"
           },
           {
             "name": "pageSize",
             "in": "query",
-            "type": "integer",
+            "schema": {
+              "type": "integer"
+            },
             "description": "페이지당 아이템 수 (1 이상의 정수)"
           },
           {
             "name": "searchBy",
             "in": "query",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "description": "검색 기준 (nickname | content)"
           },
           {
             "name": "keyword",
             "in": "query",
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "description": "검색어"
           }
         ],
@@ -175,67 +185,71 @@
       "post": {
         "tags": ["큐레이션"],
         "summary": "큐레이션 등록",
-        "description": "- 새로운 큐레이션을 등록하는 API입니다.\n- styleId는 필수로 입력되어야 합니다.\n- 요청 본문에 nickname, content, password, 점수 관련 항목을 포함해야 합니다.",
+        "description": "- 새로운 큐레이션을 등록하는 API입니다.\n- `styleId`는 필수로 입력되어야 합니다.\n- 요청 본문에 `nickname`, `content`, `password`, 점수 관련 항목을 포함해야 합니다.",
         "parameters": [
           {
             "name": "styleId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "스타일 ID (0 이상의 정수)"
-          },
-          {
-            "name": "Request Body",
-            "in": "body",
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
-            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "nickname": {
-                  "type": "string",
-                  "description": "큐레이션을 등록하는 사용자의 닉네임"
-                },
-                "content": {
-                  "type": "string",
-                  "description": "큐레이션의 본문 내용"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "큐레이션 작성 시의 비밀번호",
-                  "example": "password911"
-                },
-                "trendy": {
-                  "type": "integer",
-                  "description": "큐레이션의 트렌디 점수 (0~10 사이의 정수)"
-                },
-                "personality": {
-                  "type": "integer",
-                  "description": "큐레이션의 개성 점수 (0~10 사이의 정수)"
-                },
-                "practicality": {
-                  "type": "integer",
-                  "description": "큐레이션의 실용성 점수 (0~10 사이의 정수)"
-                },
-                "costEffectiveness": {
-                  "type": "integer",
-                  "description": "큐레이션의 비용 효율성 점수 ((0~10 사이의 정수)"
-                }
-              },
-              "required": [
-                "nickname",
-                "content",
-                "password",
-                "trendy",
-                "personality",
-                "practicality",
-                "costEffectiveness"
-              ]
-            }
+              "type": "integer"
+            },
+            "description": "스타일 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "description": "비밀번호는 영문, 숫자 조합 8~16자",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string",
+                    "description": "큐레이션을 등록하는 사용자의 닉네임"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "큐레이션의 본문 내용"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "큐레이션 작성 시의 비밀번호",
+                    "example": "password911"
+                  },
+                  "trendy": {
+                    "type": "integer",
+                    "description": "큐레이션의 트렌디 점수 (0~10 사이의 정수)"
+                  },
+                  "personality": {
+                    "type": "integer",
+                    "description": "큐레이션의 개성 점수 (0~10 사이의 정수)"
+                  },
+                  "practicality": {
+                    "type": "integer",
+                    "description": "큐레이션의 실용성 점수 (0~10 사이의 정수)"
+                  },
+                  "costEffectiveness": {
+                    "type": "integer",
+                    "description": "큐레이션의 비용 효율성 점수 ((0~10 사이의 정수)"
+                  }
+                },
+                "required": [
+                  "nickname",
+                  "content",
+                  "password",
+                  "trendy",
+                  "personality",
+                  "practicality",
+                  "costEffectiveness"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
-          "200": {
+          "201": {
             "description": "OK (성공)",
             "content": {
               "application/json": {
@@ -1756,58 +1770,62 @@
             "name": "curationId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "큐레이션 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
             "schema": {
-              "type": "object",
-              "properties": {
-                "nickname": {
-                  "type": "string",
-                  "description": "큐레이션 작성자의 닉네임"
-                },
-                "content": {
-                  "type": "string",
-                  "description": "큐레이션 내용"
-                },
-                "password": {
-                  "type": "string",
-                  "description": "큐레이션 작성자의 비밀번호"
-                },
-                "trendy": {
-                  "type": "integer",
-                  "description": "트렌디 점수"
-                },
-                "personality": {
-                  "type": "integer",
-                  "description": "개성 점수"
-                },
-                "practicality": {
-                  "type": "integer",
-                  "description": "실용성 점수"
-                },
-                "costEffectiveness": {
-                  "type": "integer",
-                  "description": "비용 효율성 점수"
-                }
-              },
-              "required": [
-                "nickname",
-                "content",
-                "password",
-                "trendy",
-                "personality",
-                "practicality",
-                "costEffectiveness"
-              ]
-            }
+              "type": "integer"
+            },
+            "description": "큐레이션 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "description": "큐레이션 작성 시의 비밀번호가 필요합니다",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string",
+                    "description": "큐레이션 작성자의 닉네임"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "큐레이션 내용"
+                  },
+                  "password": {
+                    "type": "password123",
+                    "description": "큐레이션 작성 했을 때의 비밀번호"
+                  },
+                  "trendy": {
+                    "type": "integer",
+                    "description": "트렌디 점수"
+                  },
+                  "personality": {
+                    "type": "integer",
+                    "description": "개성 점수"
+                  },
+                  "practicality": {
+                    "type": "integer",
+                    "description": "실용성 점수"
+                  },
+                  "costEffectiveness": {
+                    "type": "integer",
+                    "description": "비용 효율성 점수"
+                  }
+                },
+                "required": [
+                  "nickname",
+                  "content",
+                  "password",
+                  "trendy",
+                  "personality",
+                  "practicality",
+                  "costEffectiveness"
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK (성공)",
@@ -1855,7 +1873,7 @@
             }
           },
           "400": {
-            "description": "Bad Request (요청 양식 오류)",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
@@ -1863,7 +1881,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -1879,7 +1897,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "비밀번호가 틀렸습니다"
+                      "example": "비밀번호가 틀렸습니다"
                     }
                   }
                 }
@@ -1895,7 +1913,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "존재하지 않습니다"
+                      "example": "존재하지 않습니다"
                     }
                   }
                 }
@@ -1913,26 +1931,31 @@
             "name": "curationId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "큐레이션 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
             "schema": {
-              "type": "object",
-              "properties": {
-                "password": {
-                  "type": "string",
-                  "description": "큐레이션 작성자의 비밀번호"
-                }
-              },
-              "required": ["password"]
-            }
+              "type": "integer"
+            },
+            "description": "큐레이션 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "description": "비밀번호는 영문, 숫자 조합 8~16자",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "큐레이션 작성자의 비밀번호",
+                    "example": "password123"
+                  }
+                },
+                "required": ["password"]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK (성공)",
@@ -1943,7 +1966,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "큐레이션 삭제 성공"
+                      "example": "큐레이팅 삭제 성공"
                     }
                   }
                 }
@@ -1959,7 +1982,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -1975,7 +1998,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "비밀번호가 틀렸습니다"
+                      "example": "비밀번호가 틀렸습니다"
                     }
                   }
                 }
@@ -1991,7 +2014,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "존재하지 않습니다"
+                      "example": "존재하지 않습니다"
                     }
                   }
                 }
