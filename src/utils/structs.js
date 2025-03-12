@@ -22,30 +22,19 @@ const OrOverZeroInteger = s.refine(s.number(), "OrOverZeroInteger", (value) => {
   return Number.isInteger(value) && value >= 0;
 });
 
-const CategoryStruct = s.optional(
-  s.object({
-    name: s.size(s.string(), 1, 20),
-    brand: s.size(s.string(), 1, 20),
-    price: OrOverZeroInteger,
-  })
-);
+export const CreateCategories = s.object({
+  name: s.size(s.string(), 1, 20),
+  brand: s.size(s.string(), 1, 20),
+  price: OrOverZeroInteger,
+});
 
 export const CreateStyle = s.object({
   nickname: s.size(s.string(), 1, 20),
   title: s.size(s.string(), 1, 20),
   content: s.size(s.string(), 1, 20),
-  categories: s.optional(
-    s.object({
-      top: CategoryStruct,
-      bottom: CategoryStruct,
-      outer: CategoryStruct,
-      dress: CategoryStruct,
-      shoes: CategoryStruct,
-      bag: CategoryStruct,
-      accessory: CategoryStruct,
-    })
-  ),
-  imageUrls: s.array(s.size(s.string(), 1, 20)),
+  categories: s.any(),
+  tags: s.optional(s.array(s.string())),
+  imageUrls: s.array(s.string()),
   password: pwPattern,
 });
 

@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, CategoryType } from "@prisma/client";
 const prisma = new PrismaClient().$extends({
   model: {
     $allModels: {
@@ -8,5 +8,6 @@ const prisma = new PrismaClient().$extends({
       },
     },
   },
+  CategoryType: CategoryType,
 });
 export default prisma;

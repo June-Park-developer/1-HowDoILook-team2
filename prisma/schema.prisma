@@ -20,7 +20,7 @@ model Style {
   password   String
   content    String
   imageUrls  String[]
-  viewCount  Int
+  viewCount  Int        @default(0)
   createdAt  DateTime   @default(now())
   curations  Curation[]
   categories Category[]
