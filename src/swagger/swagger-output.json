@@ -2251,7 +2251,6 @@
                         "type": "string",
                         "example": "fashionista01"
                       },
-                      "password": { "type": "string", "example": "pass1234" },
                       "content": {
                         "type": "string",
                         "example": "편안한 캐주얼 스타일이에요!"
@@ -2306,10 +2305,6 @@
                               "type": "string",
                               "example": "닉네임"
                             },
-                            "password": {
-                              "type": "string",
-                              "example": "review123"
-                            },
                             "content": {
                               "type": "string",
                               "example": "string"
@@ -2325,8 +2320,7 @@
                               "type": "string",
                               "format": "date-time",
                               "example": "2024-02-02T13:00:00.000Z"
-                            },
-                            "styleId": { "type": "integer", "example": 0 }
+                            }
                           }
                         }
                       }
