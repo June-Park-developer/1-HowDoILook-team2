@@ -34,10 +34,28 @@ tagRouter.get(
       where: {
         tags: { some: { tagname } },
       },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        nickname: true,
+        content: true,
+        imageUrls: true,
+        viewCount: true,
+        createdAt: true,
         categories: true,
         tags: { select: { tagname: true } },
-        curations: true,
+        curations: {
+          select: {
+            id: true,
+            nickname: true,
+            content: true,
+            trendy: true,
+            personality: true,
+            practicality: true,
+            costEffectiveness: true,
+            createdAt: true,
+          },
+        },
       },
     });
 
@@ -93,7 +111,7 @@ tagRouter.delete(
       where: { tagname },
     });
 
-    res.status(204).send();
+    res.status(200).json({ message: "태그 삭제 성공" });
   })
 );
 

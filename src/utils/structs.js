@@ -67,8 +67,8 @@ export const PositiveInteger = s.refine(
 );
 
 export const ValidQuery = s.object({
-  page: PositiveInteger,
-  pageSize: PositiveInteger,
+  page: s.optional(PositiveInteger),
+  pageSize: s.optional(PositiveInteger),
   searchBy: s.optional(s.string()),
   keyword: s.optional(s.string()),
   sortBy: s.optional(s.string()),

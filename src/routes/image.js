@@ -28,6 +28,9 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, "files"));
   },
   filename: (req, file, cb) => {
+    file.originalname = Buffer.from(file.originalname, "latin1").toString(
+      "utf8"
+    );
     const ext = path.extname(file.originalname);
     const baseName = path.basename(file.originalname, ext);
     const timestamp = Date.now();
