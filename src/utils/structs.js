@@ -33,7 +33,7 @@ const CategoryStruct = s.optional(
 export const CreateStyle = s.object({
   nickname: s.size(s.string(), 1, 20),
   title: s.size(s.string(), 1, 20),
-  content: s.size(s.string(), 1, 20),
+  content: s.size(s.string(), 1, 200),
   categories: s.optional(
     s.object({
       top: CategoryStruct,
@@ -45,8 +45,9 @@ export const CreateStyle = s.object({
       accessory: CategoryStruct,
     })
   ),
-  imageUrls: s.array(s.size(s.string(), 1, 20)),
+  imageUrls: s.array(s.size(s.string(), 1, 200)),
   password: pwPattern,
+  tags: s.optional(s.array(s.string())),
 });
 
 export const PatchStyle = s.partial(CreateStyle);

@@ -145,13 +145,13 @@ styleRouter
           tags: { select: { tagname: true } },
         },
       });
-
-      const curationCount = style.curations ? style.curations.length : 0;
-
+      //수정
       res.json({
         ...style,
-        tags: style.tags.map((tag) => tag.tagname),
-        curationCount,
+        tags: style.tags?.map((tag) => tag.tagname) ?? [],
+        categories: style.categories ?? [],
+        imageUrls: style.imageUrls ?? [],
+        curationCount: style.curations ? style.curations.length : 0,
       });
     })
   )
@@ -282,6 +282,8 @@ styleRouter
           password: true,
           content: true,
           createdAt: true,
+          //추가
+          viewcount: 0,
         },
       });
       res.status(201).json(newStyle);
