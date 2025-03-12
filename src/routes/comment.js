@@ -3,19 +3,9 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { assert } from "superstruct";
 import { CreateComment, Password } from "../utils/structs.js";
 import prisma from "../utils/prismaClient.js";
+import confirmPassword from "../utils/confirmPassword.js";
 
 const commentRouter = express.Router();
-
-async function confirmPassword(commentId, password) {
-  const comment = await prisma.comment.findUniqueOrThrow({
-    where: { id: commentId },
-  });
-  if (comment.password != password) {
-    const e = new Error();
-    e.name = "PasswordError";
-    throw e;
-  }
-}
 
 commentRouter
   .route("/:commentId")
@@ -23,9 +13,11 @@ commentRouter
     asyncHandler(async (req, res) => {
       const { commentId } = req.params;
       assert(req.body, CreateComment);
-      console.log("after assert");
       const { content, password } = req.body;
-      await confirmPassword(parseInt(commentId), password);
+
+      const modelName = prisma.comment.getEntityName();
+      await confirmPassword(modelName, commentId, password);
+
       const comment = await prisma.comment.update({
         where: { id: parseInt(commentId) },
         data: {
@@ -46,7 +38,8 @@ commentRouter
       const { commentId } = req.params;
       assert(req.body, Password);
       const { password } = req.body;
-      await confirmPassword(parseInt(commentId), password);
+      const modelName = prisma.comment.getEntityName();
+      await confirmPassword(modelName, commentId, password);
       await prisma.comment.delete({
         where: { id: parseInt(commentId) },
       });
