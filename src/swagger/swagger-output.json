@@ -1742,8 +1742,9 @@
                     "description": "큐레이션 내용"
                   },
                   "password": {
-                    "type": "password123",
-                    "description": "큐레이션 작성 했을 때의 비밀번호"
+                    "type": "string",
+                    "description": "큐레이션 작성 했을 때의 비밀번호",
+                    "example": "pass1234"
                   },
                   "trendy": {
                     "type": "integer",

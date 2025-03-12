@@ -1,7 +1,7 @@
 import express from "express";
 import asyncHandler from "../utils/asyncHandler.js";
 import { assert } from "superstruct";
-import { Password, PatchCuration } from "../utils/structs.js";
+import { Password, PatchCuration, OrOverZeroString } from "../utils/structs.js";
 import { CreateComment } from "../utils/structs.js";
 import prisma from "../utils/prismaClient.js";
 import confirmPassword from "../utils/confirmPassword.js";
@@ -14,12 +14,23 @@ curationRouter
     asyncHandler(async (req, res) => {
       assert(req.body, PatchCuration);
       const { curationId } = req.params;
+      assert(curationId, OrOverZeroString);
       const { password } = req.body;
       const modelName = prisma.curation.getEntityName();
       await confirmPassword(modelName, curationId, password);
       const curation = await prisma.curation.update({
         where: { id: parseInt(curationId) },
         data: req.body,
+        select: {
+          id: true,
+          nickname: true,
+          content: true,
+          trendy: true,
+          personality: true,
+          practicality: true,
+          costEffectiveness: true,
+          createdAt: true,
+        },
       });
       res.json(curation);
     })
@@ -28,6 +39,7 @@ curationRouter
     asyncHandler(async (req, res) => {
       assert(req.body, Password);
       const { curationId } = req.params;
+      assert(curationId, OrOverZeroString);
       const { password } = req.body;
       const modelName = prisma.curation.getEntityName();
       await confirmPassword(modelName, curationId, password);

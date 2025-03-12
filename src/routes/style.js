@@ -14,6 +14,7 @@ import {
   PatchStyle,
   Password,
 } from "../utils/structs.js";
+import commentRouter from "./comment.js";
 
 const styleRouter = express.Router();
 styleRouter
@@ -33,26 +34,45 @@ styleRouter
       let search;
       switch (searchBy) {
         case "nickname":
-          search = { nickname: { contains: keyword } };
+          search = { nickname: { contains: keyword, mode: "insensitive" } };
           break;
         case "content":
-          search = { content: { contains: keyword } };
+          search = { content: { contains: keyword, mode: "insensitive" } };
           break;
         default:
           const e = new Error();
           e.name = "BadQuery";
           throw e;
       }
+      const style = await prisma.style.findUniqueOrThrow({
+        where: { id: parseInt(styleId) },
+      });
       const curations = await prisma.curation.findMany({
         skip: offset,
         take: parseInt(pageSize),
         where: { ...search, styleId: parseInt(styleId) },
+        select: {
+          id: true,
+          nickname: true,
+          content: true,
+          trendy: true,
+          personality: true,
+          practicality: true,
+          costEffectiveness: true,
+          createdAt: true,
+          comment: true,
+        },
       });
       const totalItemCount = await prisma.curation.count({
         where: { ...search, styleId: parseInt(styleId) },
       });
       const totalPages = Math.ceil(totalItemCount / pageSize);
       const currentPage = parseInt(page);
+      if (currentPage > totalPages) {
+        const e = new Error();
+        e.name = "BadQuery";
+        throw e;
+      }
       res.json({ currentPage, totalPages, totalItemCount, data: curations });
     })
   )
@@ -60,12 +80,21 @@ styleRouter
     asyncHandler(async (req, res) => {
       assert(req.body, CreateCuration);
       const { styleId } = req.params;
+      assert(styleId, OrOverZeroString);
       const curation = await prisma.curation.create({
         data: {
           ...req.body,
-          style: {
-            connect: { id: parseInt(styleId) },
-          },
+          styleId: parseInt(styleId),
+        },
+        select: {
+          id: true,
+          nickname: true,
+          content: true,
+          trendy: true,
+          personality: true,
+          practicality: true,
+          costEffectiveness: true,
+          createdAt: true,
         },
       });
       res.status(201).json(curation);
