@@ -167,15 +167,32 @@ styleRouter
 
       const { styleId } = req.params;
       assert(styleId, OrOverZeroString);
-      const style = await prisma.style.findUnique({
+      const style = await prisma.style.findUniqueOrThrow({
         where: { id: parseInt(styleId) },
-        include: {
+        select: {
+          id: true,
+          nickname: true,
+          title: true,
+          content: true,
+          viewCount: true,
+          createdAt: true,
           categories: true,
-          curations: true,
           tags: { select: { tagname: true } },
         },
       });
-
+      const transformedCategories = style.categories.reduce(
+        (object, { type, name, brand, price }) => {
+          object[type.toLowerCase()] = {
+            name,
+            brand,
+            price,
+          };
+          return object;
+        },
+        {}
+      );
+      style.categories = transformedCategories;
+      console.log(style.category);
       const curationCount = style.curations ? style.curations.length : 0;
 
       res.json({
