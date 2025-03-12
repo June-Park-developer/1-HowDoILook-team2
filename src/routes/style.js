@@ -13,7 +13,9 @@ import {
   CreateStyle,
   PatchStyle,
   Password,
+  CreateCategories,
 } from "../utils/structs.js";
+import { CategoryType } from "@prisma/client";
 
 const styleRouter = express.Router();
 styleRouter
@@ -159,6 +161,7 @@ styleRouter
   .put(
     asyncHandler(async (req, res) => {
       assert(req.body, PatchStyle);
+
       const { styleId } = req.params;
       assert(styleId, OrOverZeroString);
       const { password } = req.body;
@@ -274,16 +277,99 @@ styleRouter
   .post(
     asyncHandler(async (req, res) => {
       assert(req.body, CreateStyle);
+      // assert(req.body.categories, CreateCategories);
+      Object.values(req.body.categories).forEach((item) =>
+        assert(item, CreateCategories)
+      );
 
-      const newStyle = await prisma.style.create({
-        data: { ...req.body },
-        select: {
-          id: true,
-          password: true,
-          content: true,
-          createdAt: true,
-        },
+      const categoriesReqJson = req.body.categories;
+      delete req.body.categories;
+      const tagsReqArray = req.body.tags;
+      if (tagsReqArray) delete req.body.tag;
+
+      let categoriesInputArray = [];
+      Object.keys(categoriesReqJson).forEach((key) => {
+        let categoryType;
+        switch (key) {
+          case "top":
+            categoryType = CategoryType.TOP;
+            break;
+          case "bottom":
+            categoryType = CategoryType.BOTTOM;
+            break;
+          case "outer":
+            categoryType = CategoryType.OUTER;
+            break;
+          case "dress":
+            categoryType = CategoryType.DRESS;
+            break;
+          case "shoes":
+            categoryType = CategoryType.SHOES;
+            break;
+          case "bag":
+            categoryType = CategoryType.BAG;
+            break;
+          case "accessory":
+            categoryType = CategoryType.ACCESSORY;
+            break;
+          default:
+            const e = new Error();
+            e.name = "BadQuery";
+            throw e;
+        }
+        categoriesInputArray.push({
+          name: categoriesReqJson[key].name,
+          brand: categoriesReqJson[key].brand,
+          price: categoriesReqJson[key].price,
+          type: categoryType,
+        });
       });
+
+      let newStyle;
+
+      if (tagsReqArray) {
+        let tagsInputArray = [];
+        Object.values(tagsReqArray).forEach((item) =>
+          tagsInputArray.push({
+            where: { tagname: item },
+            create: { tagname: item },
+          })
+        );
+
+        newStyle = await prisma.style.create({
+          data: {
+            ...req.body,
+            categories: {
+              create: categoriesInputArray,
+            },
+            tags: {
+              connectOrCreate: tagsInputArray,
+            },
+          },
+          select: {
+            id: true,
+            password: true,
+            content: true,
+            createdAt: true,
+          },
+        });
+      } else {
+        newStyle = await prisma.style.create({
+          data: {
+            ...req.body,
+            categories: {
+              create: categoriesInputArray,
+            },
+          },
+          select: {
+            id: true,
+            password: true,
+            content: true,
+            createdAt: true,
+          },
+        });
+      }
+
       res.status(201).json(newStyle);
     })
   );
