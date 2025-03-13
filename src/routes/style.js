@@ -560,8 +560,20 @@ styleRouter
           imageUrls: true,
         },
       });
-      newStyle.curationCount = 0;
+      const transformedCategories = newStyle.categories.reduce(
+        (object, { type, name, brand, price }) => {
+          object[type.toLowerCase()] = {
+            name,
+            brand,
+            price,
+          };
+          return object;
+        },
+        {}
+      );
 
+      newStyle.categories = transformedCategories;
+      newStyle.curationCount = 0;
       res.status(201).json(newStyle);
     })
   );
