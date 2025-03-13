@@ -178,6 +178,7 @@ styleRouter
           createdAt: true,
           categories: true,
           tags: { select: { tagname: true } },
+          imageUrls: true,
         },
       });
       const transformedCategories = style.categories.reduce(
@@ -192,7 +193,7 @@ styleRouter
         {}
       );
       style.categories = transformedCategories;
-      console.log(style.category);
+
       const curationCount = style.curations ? style.curations.length : 0;
 
       res.json({
@@ -214,7 +215,7 @@ styleRouter
       await confirmPassword(modelName, styleId, password);
 
       const tagRecords = await Promise.all(
-        tags.map(async (tagname) => {
+        req.body.tags.map(async (tagname) => {
           return await prisma.tag.upsert({
             where: { tagname },
             update: {},
@@ -222,22 +223,98 @@ styleRouter
           });
         })
       );
+      // 태그는 잘 되어 있는 것 같고, category만 array로 바꾸어서 해야겠음..
+      // 복사 시작
+      const categoriesReqJson = req.body.categories;
+      delete req.body.categories;
+      let categoriesInputArray = [];
+      Object.keys(categoriesReqJson).forEach((key) => {
+        let categoryType;
+        switch (key) {
+          case "top":
+            categoryType = CategoryType.TOP;
+            break;
+          case "bottom":
+            categoryType = CategoryType.BOTTOM;
+            break;
+          case "outer":
+            categoryType = CategoryType.OUTER;
+            break;
+          case "dress":
+            categoryType = CategoryType.DRESS;
+            break;
+          case "shoes":
+            categoryType = CategoryType.SHOES;
+            break;
+          case "bag":
+            categoryType = CategoryType.BAG;
+            break;
+          case "accessory":
+            categoryType = CategoryType.ACCESSORY;
+            break;
+          default:
+            const e = new Error();
+            e.name = "BadQuery";
+            throw e;
+        }
+        categoriesInputArray.push({
+          name: categoriesReqJson[key].name,
+          brand: categoriesReqJson[key].brand,
+          price: categoriesReqJson[key].price,
+          type: categoryType,
+        });
+      });
 
+      // 복사의 끝
       const updatedStyle = await prisma.style.update({
         where: { id: parseInt(styleId) },
         data: {
           ...req.body,
           tags: {
             set: [],
-            connect: tagRecords.map((tag) => ({ tagname: tag.tagname })),
+            connectOrCreate: tagRecords.map((tag) => ({
+              where: { tagname: tag.tagname },
+              create: { tagname: tag.tagname },
+            })),
+          },
+          categories: {
+            deleteMany: {},
+            create: categoriesInputArray,
           },
         },
-        include: {
+        select: {
+          id: true,
+          nickname: true,
+          title: true,
+          content: true,
+          viewCount: true,
+          createdAt: true,
+          categories: true,
           tags: { select: { tagname: true } },
+          imageUrls: true,
         },
       });
+      const transformedCategories = updatedStyle.categories.reduce(
+        (object, { type, name, brand, price }) => {
+          object[type.toLowerCase()] = {
+            name,
+            brand,
+            price,
+          };
+          return object;
+        },
+        {}
+      );
+      updatedStyle.categories = transformedCategories;
+      const curationCount = updatedStyle.curations
+        ? updatedStyle.curations.length
+        : 0;
 
-      res.send(updatedStyle);
+      res.json({
+        ...updatedStyle,
+        tags: updatedStyle.tags.map((tag) => tag.tagname),
+        curationCount,
+      });
     })
   )
 
