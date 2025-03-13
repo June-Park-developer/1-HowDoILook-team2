@@ -17,6 +17,61 @@ import {
 } from "../utils/structs.js";
 import { CategoryType } from "@prisma/client";
 
+function isolateCategoriesTagsArray(body) {
+  const categoriesReqJson = body.categories;
+  delete body.categories;
+  const tagsReqArray = body.tags;
+  if (tagsReqArray) delete body.tags;
+
+  let categoriesInputArray = [];
+  Object.keys(categoriesReqJson).forEach((key) => {
+    let categoryType;
+    switch (key) {
+      case "top":
+        categoryType = CategoryType.TOP;
+        break;
+      case "bottom":
+        categoryType = CategoryType.BOTTOM;
+        break;
+      case "outer":
+        categoryType = CategoryType.OUTER;
+        break;
+      case "dress":
+        categoryType = CategoryType.DRESS;
+        break;
+      case "shoes":
+        categoryType = CategoryType.SHOES;
+        break;
+      case "bag":
+        categoryType = CategoryType.BAG;
+        break;
+      case "accessory":
+        categoryType = CategoryType.ACCESSORY;
+        break;
+      default:
+        const e = new Error();
+        e.name = "BadQuery";
+        throw e;
+    }
+    categoriesInputArray.push({
+      name: categoriesReqJson[key].name,
+      brand: categoriesReqJson[key].brand,
+      price: categoriesReqJson[key].price,
+      type: categoryType,
+    });
+  });
+
+  let tagsInputArray = [];
+  Object.values(tagsReqArray).forEach((item) =>
+    tagsInputArray.push({
+      where: { tagname: item },
+      create: { tagname: item },
+    })
+  );
+
+  return { categoriesInputArray, tagsInputArray, tagsReqArray };
+}
+
 const styleRouter = express.Router();
 styleRouter
   .route("/:styleId/curations")
@@ -189,7 +244,7 @@ styleRouter.get(
           tags: style.tags.map((tag) => tag.tagname),
           categories: categoriesObject,
           viewCount: style.viewCount || 0,
-          curationCount: style.curations ? style.curations.length : 0,
+          curationCount: style.curations.length,
           createdAt: style.createdAt,
         };
       })
@@ -269,7 +324,7 @@ styleRouter
       );
       style.categories = transformedCategories;
 
-      const curationCount = style.curations ? style.curations.length : 0;
+      const curationCount = style.curations.length;
 
       res.json({
         ...style,
@@ -298,49 +353,9 @@ styleRouter
           });
         })
       );
-      // 태그는 잘 되어 있는 것 같고, category만 array로 바꾸어서 해야겠음..
-      // 복사 시작
-      const categoriesReqJson = req.body.categories;
-      delete req.body.categories;
-      let categoriesInputArray = [];
-      Object.keys(categoriesReqJson).forEach((key) => {
-        let categoryType;
-        switch (key) {
-          case "top":
-            categoryType = CategoryType.TOP;
-            break;
-          case "bottom":
-            categoryType = CategoryType.BOTTOM;
-            break;
-          case "outer":
-            categoryType = CategoryType.OUTER;
-            break;
-          case "dress":
-            categoryType = CategoryType.DRESS;
-            break;
-          case "shoes":
-            categoryType = CategoryType.SHOES;
-            break;
-          case "bag":
-            categoryType = CategoryType.BAG;
-            break;
-          case "accessory":
-            categoryType = CategoryType.ACCESSORY;
-            break;
-          default:
-            const e = new Error();
-            e.name = "BadQuery";
-            throw e;
-        }
-        categoriesInputArray.push({
-          name: categoriesReqJson[key].name,
-          brand: categoriesReqJson[key].brand,
-          price: categoriesReqJson[key].price,
-          type: categoryType,
-        });
-      });
 
-      // 복사의 끝
+      const isolatedArray = isolateCategoriesTagsArray(req.body);
+
       const updatedStyle = await prisma.style.update({
         where: { id: parseInt(styleId) },
         data: {
@@ -354,7 +369,7 @@ styleRouter
           },
           categories: {
             deleteMany: {},
-            create: categoriesInputArray,
+            create: isolatedArray.categoriesInputArray,
           },
         },
         select: {
@@ -367,8 +382,10 @@ styleRouter
           categories: true,
           tags: { select: { tagname: true } },
           imageUrls: true,
+          curations: true,
         },
       });
+
       const transformedCategories = updatedStyle.categories.reduce(
         (object, { type, name, brand, price }) => {
           object[type.toLowerCase()] = {
@@ -380,10 +397,9 @@ styleRouter
         },
         {}
       );
+
       updatedStyle.categories = transformedCategories;
-      const curationCount = updatedStyle.curations
-        ? updatedStyle.curations.length
-        : 0;
+      const curationCount = updatedStyle.curations.length;
 
       res.json({
         ...updatedStyle,
@@ -460,8 +476,41 @@ styleRouter
         orderBy,
         skip,
         take,
+        select: {
+          id: true,
+          nickname: true,
+          title: true,
+          content: true,
+          viewCount: true,
+          createdAt: true,
+          categories: true,
+          tags: { select: { tagname: true } },
+          imageUrls: true,
+          curations: true,
+        }, //썸네일, 큐레잍이카운드
       });
-      const totalItemCount = await prisma.style.count();
+
+      styles.forEach((item) => {
+        item.categories = item.categories.reduce(
+          (object, { type, name, brand, price }) => {
+            object[type.toLowerCase()] = {
+              name,
+              brand,
+              price,
+            };
+            return object;
+          },
+          {}
+        );
+        item.tags = item.tags.map((tag) => tag.tagname);
+        item.curationCount = item.curations.length;
+        delete item.curations;
+        delete item.password;
+        item.thumbnail = item.imageUrls[0] ? item.imageUrls[0] : "";
+        delete item.imageUrls;
+      });
+
+      const totalItemCount = styles.length;
       const totalPages = Math.ceil(totalItemCount / pageSize);
       res.json({
         currentPage: page,
@@ -474,98 +523,41 @@ styleRouter
   .post(
     asyncHandler(async (req, res) => {
       assert(req.body, CreateStyle);
-      // assert(req.body.categories, CreateCategories);
       Object.values(req.body.categories).forEach((item) =>
         assert(item, CreateCategories)
       );
 
-      const categoriesReqJson = req.body.categories;
-      delete req.body.categories;
-      const tagsReqArray = req.body.tags;
-      if (tagsReqArray) delete req.body.tag;
-
-      let categoriesInputArray = [];
-      Object.keys(categoriesReqJson).forEach((key) => {
-        let categoryType;
-        switch (key) {
-          case "top":
-            categoryType = CategoryType.TOP;
-            break;
-          case "bottom":
-            categoryType = CategoryType.BOTTOM;
-            break;
-          case "outer":
-            categoryType = CategoryType.OUTER;
-            break;
-          case "dress":
-            categoryType = CategoryType.DRESS;
-            break;
-          case "shoes":
-            categoryType = CategoryType.SHOES;
-            break;
-          case "bag":
-            categoryType = CategoryType.BAG;
-            break;
-          case "accessory":
-            categoryType = CategoryType.ACCESSORY;
-            break;
-          default:
-            const e = new Error();
-            e.name = "BadQuery";
-            throw e;
-        }
-        categoriesInputArray.push({
-          name: categoriesReqJson[key].name,
-          brand: categoriesReqJson[key].brand,
-          price: categoriesReqJson[key].price,
-          type: categoryType,
-        });
-      });
-
+      const isolatedArray = isolateCategoriesTagsArray(req.body);
       let newStyle;
-
-      if (tagsReqArray) {
-        let tagsInputArray = [];
-        Object.values(tagsReqArray).forEach((item) =>
-          tagsInputArray.push({
-            where: { tagname: item },
-            create: { tagname: item },
-          })
-        );
-
-        newStyle = await prisma.style.create({
-          data: {
-            ...req.body,
-            categories: {
-              create: categoriesInputArray,
-            },
+      const tagsData = isolatedArray.tagsReqArray
+        ? {
             tags: {
-              connectOrCreate: tagsInputArray,
+              connectOrCreate: isolatedArray.tagsInputArray,
             },
+          }
+        : undefined;
+
+      newStyle = await prisma.style.create({
+        data: {
+          ...req.body,
+          categories: {
+            create: isolatedArray.categoriesInputArray,
           },
-          select: {
-            id: true,
-            password: true,
-            content: true,
-            createdAt: true,
-          },
-        });
-      } else {
-        newStyle = await prisma.style.create({
-          data: {
-            ...req.body,
-            categories: {
-              create: categoriesInputArray,
-            },
-          },
-          select: {
-            id: true,
-            password: true,
-            content: true,
-            createdAt: true,
-          },
-        });
-      }
+          ...(tagsData && tagsData),
+        },
+        select: {
+          id: true,
+          nickname: true,
+          title: true,
+          content: true,
+          viewCount: true,
+          createdAt: true,
+          categories: true,
+          tags: true,
+          imageUrls: true,
+        },
+      });
+      newStyle.curationCount = 0;
 
       res.status(201).json(newStyle);
     })
