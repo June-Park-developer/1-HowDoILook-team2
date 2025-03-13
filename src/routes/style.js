@@ -314,13 +314,9 @@ styleRouter
           curations: true,
         },
       });
-      const transformedCategories = style.categories.reduce(
+      const transformedCategories = (style.categories || []).reduce(
         (object, { type, name, brand, price }) => {
-          object[type.toLowerCase()] = {
-            name,
-            brand,
-            price,
-          };
+          object[type.toLowerCase()] = { name, brand, price };
           return object;
         },
         {}
@@ -331,7 +327,7 @@ styleRouter
       const { curations, ...styleWithoutCurations } = style;
       res.json({
         ...styleWithoutCurations,
-        tags: style.tags.map((tag) => tag.tagname),
+        tags: (style.tags || []).map((tag) => tag.tagname),
         curationCount,
       });
     })
@@ -445,14 +441,14 @@ styleRouter
       const take = pageSize;
 
       // sortBy
-      let orderBy = {};
-      if (sortBy === "latest") {
-        orderBy = { createdAt: "desc" };
-      } else if (sortBy === "mostViewed") {
-        orderBy = { viewCount: "desc" };
-      } else if (sortBy === "mostCurated") {
-        orderBy = { curationCount: "desc" };
-      }
+      // let orderBy = {};
+      // if (sortBy === "latest") {
+      //   orderBy = { createdAt: "desc" };
+      // } else if (sortBy === "mostViewed") {
+      //   orderBy = { viewCount: "desc" };
+      // } else if (sortBy === "mostCurated") {
+      //   orderBy = { curationCount: "desc" };
+      // }
 
       let search;
       switch (searchBy) {
@@ -466,7 +462,7 @@ styleRouter
           search = { title: { contains: keyword, mode: "insensitive" } };
           break;
         case "tag":
-          search = { tags: { some: { tagname: tag } } };
+          search = { tags: { some: { tagname: keyword } } };
           break;
         default:
           const e = new Error();
@@ -476,9 +472,6 @@ styleRouter
 
       const styles = await prisma.style.findMany({
         where: { ...search },
-        orderBy,
-        skip,
-        take,
         select: {
           id: true,
           nickname: true,
@@ -513,6 +506,19 @@ styleRouter
         delete item.imageUrls;
       });
 
+      const orderByOptions = {
+        latest: (a, b) => b.createdAt - a.createdAt,
+        mostViewed: (a, b) => b.viewCount - a.viewCount,
+        mostCurated: (a, b) => b.curationCount - a.curationCount,
+      };
+
+      const orderBy = orderByOptions[sortBy] || orderByOptions["total"];
+      styles.sort(orderBy);
+
+      const paginatedStyles = styles.slice(
+        (page - 1) * pageSize,
+        page * pageSize
+      );
       const totalItemCount = styles.length;
       const totalPages = Math.ceil(totalItemCount / pageSize);
       res.json({
