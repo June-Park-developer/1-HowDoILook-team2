@@ -19,8 +19,8 @@ export const STYLES = [
       ],
     },
     imageUrls: [
-      "https://example.com/style1-1.jpg",
-      "https://example.com/style1-2.jpg",
+      "http://localhost:3000/download/card_frame00-resources.assets-1272-1741841755986.png",
+      "http://localhost:3000/download/card_frame01-resources.assets-1244-1741841813146.png",
     ],
     viewCount: 120,
     createdAt: new Date("2024-02-01T12:00:00Z"),
@@ -44,8 +44,8 @@ export const STYLES = [
       ],
     },
     imageUrls: [
-      "https://example.com/style2-1.jpg",
-      "https://example.com/style2-2.jpg",
+      "http://localhost:3000/download/card_frame02-resources.assets-1224-1741841832624.png",
+      "http://localhost:3000/download/card_frame03-resources.assets-1213-1741841845911.png",
     ],
     viewCount: 250,
     createdAt: new Date("2024-02-05T15:30:00Z"),
@@ -69,8 +69,8 @@ export const STYLES = [
       ],
     },
     imageUrls: [
-      "https://example.com/style3-1.jpg",
-      "https://example.com/style3-2.jpg",
+      "http://localhost:3000/download/card_frame07-resources.assets-1120-1741841860919.png",
+      "http://localhost:3000/download/card_frame08-resources.assets-1034-1741841873130.png",
     ],
     viewCount: 340,
     createdAt: new Date("2024-02-10T10:15:00Z"),
