@@ -263,7 +263,7 @@ styleRouter.get(
         return {
           id: ranking.id,
           avgScores: ranking.avgScores,
-          rating: ranking.total,
+          total: ranking.total,
           thumbnail: thumbnailImage,
           nickname: style.nickname || "",
           title: style.title || "",
@@ -293,6 +293,11 @@ styleRouter.get(
     // ranking 필드 추가 (순위)
     rankings.forEach((item, index) => {
       item.ranking = index + 1;
+      if (rankBy === "total") {
+        item.rating = item.total;
+      } else {
+        item.rating = item.avgScores[rankBy];
+      }
     });
 
     const totalItemCount = rankings.length;
@@ -301,7 +306,7 @@ styleRouter.get(
       .slice((pageInt - 1) * pageSizeInt, pageInt * pageSizeInt)
       .map((item) => {
         // avgScores 필드 제거
-        const { avgScores, ...rest } = item;
+        const { total, avgScores, ...rest } = item;
         return rest;
       });
 
