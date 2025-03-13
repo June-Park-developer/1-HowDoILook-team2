@@ -179,7 +179,7 @@ styleRouter.get(
       const style = styles.find((s) => s.id === ranking.styleId);
       if (style) {
         ranking.tags = style.tags.map((tag) => tag.tagname);
-        style.curationCount = style.curations ? style.curations.length : 0;
+        style.curationCount = style.curations.length;
         style.viewCount = style.viewCount || 0;
       }
     });
@@ -249,7 +249,7 @@ styleRouter
       );
       style.categories = transformedCategories;
 
-      const curationCount = style.curations ? style.curations.length : 0;
+      const curationCount = style.curations.length;
 
       res.json({
         ...style,
@@ -307,6 +307,7 @@ styleRouter
           categories: true,
           tags: { select: { tagname: true } },
           imageUrls: true,
+          curations: true,
         },
       });
 
@@ -323,9 +324,7 @@ styleRouter
       );
 
       updatedStyle.categories = transformedCategories;
-      const curationCount = updatedStyle.curations
-        ? updatedStyle.curations.length
-        : 0;
+      const curationCount = updatedStyle.curations.length;
 
       res.json({
         ...updatedStyle,
@@ -402,8 +401,41 @@ styleRouter
         orderBy,
         skip,
         take,
+        select: {
+          id: true,
+          nickname: true,
+          title: true,
+          content: true,
+          viewCount: true,
+          createdAt: true,
+          categories: true,
+          tags: { select: { tagname: true } },
+          imageUrls: true,
+          curations: true,
+        }, //썸네일, 큐레잍이카운드
       });
-      const totalItemCount = await prisma.style.count();
+
+      styles.forEach((item) => {
+        item.categories = item.categories.reduce(
+          (object, { type, name, brand, price }) => {
+            object[type.toLowerCase()] = {
+              name,
+              brand,
+              price,
+            };
+            return object;
+          },
+          {}
+        );
+        item.tags = item.tags.map((tag) => tag.tagname);
+        item.curationCount = item.curations.length;
+        delete item.curations;
+        delete item.password;
+        item.thumbnail = item.imageUrls[0] ? item.imageUrls[0] : "";
+        delete item.imageUrls;
+      });
+
+      const totalItemCount = styles.length;
       const totalPages = Math.ceil(totalItemCount / pageSize);
       res.json({
         currentPage: page,
