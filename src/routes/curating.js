@@ -55,13 +55,8 @@ curationRouter.route("/:curationId/comments").post(
     const { curationId } = req.params;
     assert(curationId, OrOverZeroString);
     assert(req.body, CreateComment);
-
-    const relatedCuration = await prisma.curation.findUniqueOrThrow({
-      where: { id: parseInt(curationId) },
-    });
-    const styleId = parseInt(relatedCuration.styleId);
-    const modelName = await prisma.style.getEntityName();
-    await confirmPassword(modelName, styleId, req.body.password);
+    const modelName = await prisma.curation.getEntityName();
+    await confirmPassword(modelName, curationId, req.body.password, 11);
 
     const comment = await prisma.comment.create({
       data: {

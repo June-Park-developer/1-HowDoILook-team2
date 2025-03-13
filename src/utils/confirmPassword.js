@@ -1,8 +1,15 @@
 import prisma from "./prismaClient.js";
-
-async function confirmPassword(table, id, password) {
+async function confirmPassword(table, id, password, postCommentFlag) {
   let existPW;
-  if (
+  if (postCommentFlag !== undefined) {
+    const curation = await prisma.curation.findUniqueOrThrow({
+      where: { id: parseInt(id) },
+      include: {
+        style: true,
+      },
+    });
+    existPW = curation.style.password;
+  } else if (
     table == prisma.style.getEntityName() ||
     table == prisma.curation.getEntityName()
   ) {
