@@ -494,27 +494,31 @@
             "name": "styleId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "스타일 ID"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "비밀번호는 영문, 숫자 조합 8~16자",
-            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "password": {
-                  "type": "string",
-                  "description": "스타일 작성자의 비밀번호",
-                  "example": "password911"
-                }
-              },
-              "required": ["password"]
-            }
+              "type": "integer"
+            },
+            "description": "스타일 ID (0 이상의 정수)"
           }
         ],
+        "requestBody": {
+          "description": "비밀번호는 영문, 숫자 조합 8~16자",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "스타일 작성자의 비밀번호",
+                    "example": "password911"
+                  }
+                },
+                "required": ["password"]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK (성공)",
@@ -525,7 +529,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "스타일 삭제 성공"
+                      "example": "스타일 삭제 성공"
                     }
                   }
                 }
@@ -541,7 +545,7 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "잘못된 요청입니다"
+                      "example": "잘못된 요청입니다"
                     }
                   }
                 }
@@ -593,22 +597,28 @@
             "name": "sort",
             "in": "query",
             "required": false,
-            "type": "string",
-            "description": "스타일 랭킹을 정렬하는 기준. 예: 'viewCount', 'curationCount' 등"
+            "schema": {
+              "type": "string"
+            },
+            "description": "스타일 랭킹을 정렬하는 기준. 'viewCount', 'curationCount' "
           },
           {
             "name": "page",
             "in": "query",
             "required": false,
-            "type": "string",
-            "description": "조회할 페이지 번호. 기본값은 1"
+            "schema": {
+              "type": "integer"
+            },
+            "description": "현재 페이지 번호 (1 이상의 정수)"
           },
           {
             "name": "pageSize",
             "in": "query",
             "required": false,
-            "type": "string",
-            "description": "페이지당 스타일 항목 수. 기본값은 10"
+            "schema": {
+              "type": "integer"
+            },
+            "description": "페이지당 아이템 수 (1 이상의 정수)"
           }
         ],
         "responses": {
@@ -621,51 +631,116 @@
                   "properties": {
                     "currentPage": {
                       "type": "integer",
-                      "description": "현재 페이지 번호"
+                      "description": "현재 페이지 번호",
+                      "example": 1
                     },
                     "totalPages": {
                       "type": "integer",
-                      "description": "전체 페이지 수"
+                      "description": "전체 페이지 수",
+                      "example": 5
                     },
-                    "totalItems": {
+                    "totalItemCount": {
                       "type": "integer",
-                      "description": "전체 스타일 항목 수"
+                      "description": "전체 스타일 항목 수",
+                      "example": 50
                     },
-                    "items": {
+                    "data": {
                       "type": "array",
+                      "description": "현재 페이지의 스타일 목록",
                       "items": {
                         "type": "object",
                         "properties": {
                           "id": {
                             "type": "integer",
-                            "description": "스타일의 고유 ID"
+                            "description": "스타일의 고유 ID",
+                            "example": 1
+                          },
+                          "thumbnail": {
+                            "type": "string",
+                            "description": "썸네일",
+                            "example": "string"
                           },
                           "nickname": {
                             "type": "string",
-                            "description": "스타일을 등록한 사용자의 닉네임"
+                            "description": "스타일을 등록한 사용자의 닉네임",
+                            "example": "string"
                           },
                           "title": {
                             "type": "string",
-                            "description": "스타일의 제목"
+                            "description": "스타일의 제목",
+                            "example": "string"
+                          },
+                          "tags": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "스타일의 관련 태그",
+                            "example": ["string", "string"]
+                          },
+                          "categories": {
+                            "type": "object",
+                            "properties": {
+                              "top": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string",
+                                    "description": "카테고리 이름",
+                                    "example": "string"
+                                  },
+                                  "brand": {
+                                    "type": "string",
+                                    "description": "브랜드 이름",
+                                    "example": "string"
+                                  },
+                                  "price": {
+                                    "type": "number",
+                                    "description": "가격",
+                                    "example": 0
+                                  }
+                                }
+                              }
+                            },
+                            "description": "스타일 카테고리 정보"
                           },
                           "viewCount": {
                             "type": "integer",
-                            "description": "스타일의 조회수"
+                            "description": "스타일의 조회수",
+                            "example": 100
                           },
                           "curationCount": {
                             "type": "integer",
-                            "description": "스타일에 대한 큐레이팅 수"
+                            "description": "스타일에 대한 큐레이팅 수",
+                            "example": 20
                           },
                           "createdAt": {
                             "type": "string",
                             "format": "date-time",
-                            "description": "스타일의 생성 일시"
+                            "description": "스타일의 생성 일시",
+                            "example": "2024-02-22T07:47:49.803Z"
+                          },
+                          "ranking": {
+                            "type": "integer",
+                            "description": "스타일의 랭킹 순위",
+                            "example": 1
+                          },
+                          "rating": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "스타일의 평점",
+                            "example": 3.7
                           }
                         }
-                      },
-                      "description": "스타일 목록"
+                      }
                     }
-                  }
+                  },
+                  "required": [
+                    "currentPage",
+                    "totalPages",
+                    "totalItemCount",
+                    "data"
+                  ]
                 }
               }
             }
@@ -683,46 +758,56 @@
             "name": "page",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32",
-            "description": "현재 페이지 번호"
+            "schema": {
+              "type": "integer"
+            },
+            "description": "현재 페이지 번호(양의 정수)"
           },
           {
             "name": "pageSize",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32",
-            "description": "페이지당 아이템 수"
+            "schema": {
+              "type": "integer"
+            },
+            "description": "페이지당 아이템 수(양의 정수)"
           },
           {
             "name": "sortBy",
             "in": "query",
             "required": false,
-            "type": "string",
-            "enum": ["latest", "mostViewed", "mostCurated"],
-            "description": "정렬 기준 (latest: 최신순, mostViewed: 조회수 순, mostCurated: 추천순)"
+            "schema": {
+              "type": "string",
+              "enum": ["latest", "mostViewed", "mostCurated"]
+            },
+            "description": "정렬 기준"
           },
           {
             "name": "searchBy",
             "in": "query",
             "required": false,
-            "type": "string",
-            "enum": ["nickname", "title", "content", "tag"],
-            "description": "검색 기준 (nickname: 닉네임, title: 제목, content: 내용, tag: 태그)"
+            "schema": {
+              "type": "string",
+              "enum": ["nickname", "title", "content", "tag"]
+            },
+            "description": "검색 기준"
           },
           {
             "name": "keyword",
             "in": "query",
             "required": false,
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "description": "검색어"
           },
           {
             "name": "tag",
             "in": "query",
             "required": false,
-            "type": "string",
+            "schema": {
+              "type": "string"
+            },
             "description": "태그"
           }
         ],
