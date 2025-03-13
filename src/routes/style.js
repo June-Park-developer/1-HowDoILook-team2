@@ -490,7 +490,7 @@ styleRouter
           tags: { select: { tagname: true } },
           imageUrls: true,
           curations: true,
-        }, //썸네일, 큐레잍이카운드
+        },
       });
 
       styles.forEach((item) => {
