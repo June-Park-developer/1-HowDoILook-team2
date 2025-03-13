@@ -269,47 +269,6 @@ styleRouter
       const modelName = prisma.style.getEntityName();
       await confirmPassword(modelName, styleId, password);
 
-      // //카테고리 어레이, 태그 어레이
-
-      // //기존태그 가져와서 저장 + 가져오는 김에 카테고리도
-      // const existingTags = await prisma.style.findUnique({
-      //   where: { id: styleId },
-      //   select: {
-      //     tags: {
-      //       select: { name: true },
-      //     },
-      //   },
-      // });
-      // //새 태그와 비교
-      // const existingTagNames = existingTags.tags.map((tag) => tag.name);
-      // const newTagNames = tagsInputArray.map((tag) => tag.where.name);
-
-      // // 3. `disconnect`할 `tags`를 찾아내기
-      // const tagsToDisconnect = existingTagNames
-      //   .filter((tag) => !newTagNames.includes(tag))
-      //   .map((tag) => ({ name: tag }));
-
-      // //새 카테고리와 비교
-
-      // //카테고리 삭제
-
-      // // 4. 업데이트 요청 (tags 연결 및 disconnect 처리)
-      // const updatedStyle = await prisma.style.update({
-      //   where: { id: styleId },
-      //   data: {
-      //     tags: {
-      //       connectOrCreate: tagsInputArray, // 새로운 tags 연결
-      //       disconnect: tagsToDisconnect, // 불일치하는 tags 해제
-      //     },
-      //   },
-      //   select: {
-      //     id: true,
-      //     password: true,
-      //     content: true,
-      //     createdAt: true,
-      //   },
-      // });
-
       const tagRecords = await Promise.all(
         req.body.tags.map(async (tagname) => {
           return await prisma.tag.upsert({
@@ -319,49 +278,9 @@ styleRouter
           });
         })
       );
-      // 태그는 잘 되어 있는 것 같고, category만 array로 바꾸어서 해야겠음..
-      // 복사 시작
-      const categoriesReqJson = req.body.categories;
-      delete req.body.categories;
-      let categoriesInputArray = [];
-      Object.keys(categoriesReqJson).forEach((key) => {
-        let categoryType;
-        switch (key) {
-          case "top":
-            categoryType = CategoryType.TOP;
-            break;
-          case "bottom":
-            categoryType = CategoryType.BOTTOM;
-            break;
-          case "outer":
-            categoryType = CategoryType.OUTER;
-            break;
-          case "dress":
-            categoryType = CategoryType.DRESS;
-            break;
-          case "shoes":
-            categoryType = CategoryType.SHOES;
-            break;
-          case "bag":
-            categoryType = CategoryType.BAG;
-            break;
-          case "accessory":
-            categoryType = CategoryType.ACCESSORY;
-            break;
-          default:
-            const e = new Error();
-            e.name = "BadQuery";
-            throw e;
-        }
-        categoriesInputArray.push({
-          name: categoriesReqJson[key].name,
-          brand: categoriesReqJson[key].brand,
-          price: categoriesReqJson[key].price,
-          type: categoryType,
-        });
-      });
 
-      // 복사의 끝
+      const isolatedArray = isolateCategoriesTagsArray(req.body);
+
       const updatedStyle = await prisma.style.update({
         where: { id: parseInt(styleId) },
         data: {
@@ -375,7 +294,7 @@ styleRouter
           },
           categories: {
             deleteMany: {},
-            create: categoriesInputArray,
+            create: isolatedArray.categoriesInputArray,
           },
         },
         select: {
@@ -390,6 +309,7 @@ styleRouter
           imageUrls: true,
         },
       });
+
       const transformedCategories = updatedStyle.categories.reduce(
         (object, { type, name, brand, price }) => {
           object[type.toLowerCase()] = {
@@ -401,6 +321,7 @@ styleRouter
         },
         {}
       );
+
       updatedStyle.categories = transformedCategories;
       const curationCount = updatedStyle.curations
         ? updatedStyle.curations.length
@@ -500,7 +421,6 @@ styleRouter
       );
 
       const isolatedArray = isolateCategoriesTagsArray(req.body);
-
       let newStyle;
       const tagsData = isolatedArray.tagsReqArray
         ? {
@@ -509,6 +429,7 @@ styleRouter
             },
           }
         : undefined;
+
       newStyle = await prisma.style.create({
         data: {
           ...req.body,
