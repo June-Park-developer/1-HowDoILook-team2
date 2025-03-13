@@ -55,14 +55,12 @@ curationRouter.route("/:curationId/comments").post(
     const { curationId } = req.params;
     assert(curationId, OrOverZeroString);
     assert(req.body, CreateComment);
-
-    const modelName = prisma.curation.getEntityName();
-    await confirmPassword(modelName, curationId, req.body.password);
+    const modelName = await prisma.curation.getEntityName();
+    await confirmPassword(modelName, curationId, req.body.password, 11);
 
     const comment = await prisma.comment.create({
       data: {
         content: req.body.content,
-        password: req.body.password,
         curationId: parseInt(curationId),
       },
       select: {

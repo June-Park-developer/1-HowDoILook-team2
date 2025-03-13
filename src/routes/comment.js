@@ -14,9 +14,9 @@ commentRouter
       const { commentId } = req.params;
       assert(commentId, OrOverZeroString);
       assert(req.body, CreateComment);
-      const { content, password } = req.body;
-      const modelName = prisma.comment.getEntityName();
-      await confirmPassword(modelName, commentId, password);
+      const { content } = req.body;
+      const modelName = await prisma.comment.getEntityName();
+      await confirmPassword(modelName, commentId, req.body.password);
 
       const comment = await prisma.comment.update({
         where: { id: parseInt(commentId) },
