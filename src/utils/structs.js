@@ -73,6 +73,7 @@ export const ValidQuery = s.object({
   keyword: s.optional(s.string()),
   sortBy: s.optional(s.string()),
   tag: s.optional(s.string()),
+  rankBy: s.optional(s.string()),
 });
 
 export const OptionalQuery = s.partial(ValidQuery);

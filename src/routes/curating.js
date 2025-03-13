@@ -128,7 +128,7 @@ curationRouter.get(
         : { trendy: 0, personality: 0, practicality: 0, costEffectiveness: 0 };
 
       return {
-        styleId: style.id,
+        id: style.id,
         avgScores,
         // 전체 평균 점수 (total) 계산
         total:

@@ -158,31 +158,99 @@ styleRouter
   );
 
 //랭킹
+
 styleRouter.get(
   "/ranking",
   asyncHandler(async (req, res) => {
     assert(req.query, OptionalQuery);
 
-    const { sort, page = 1, pageSize = 5 } = req.query;
+    const { rankBy = "total", page = 1, pageSize = 5 } = req.query;
+    const pageInt = parseInt(page);
+    const pageSizeInt = parseInt(pageSize);
 
     const response = await fetch(
       "http://localhost:3000/curations/average-scores"
     );
-    const rankings = await response.json();
+    const rawRankings = await response.json();
+
+    // Style 데이터 가져오기 - 필요한 필드들 추가
     const styles = await prisma.style.findMany({
       include: {
         tags: { select: { tagname: true } },
+        categories: {
+          select: { name: true, brand: true, price: true, type: true },
+        }, // categories 추가
+        curations: { select: { id: true } },
       },
     });
 
-    rankings.forEach((ranking) => {
-      const style = styles.find((s) => s.id === ranking.styleId);
-      if (style) {
-        ranking.tags = style.tags.map((tag) => tag.tagname);
-        style.curationCount = style.curations.length;
-        style.viewCount = style.viewCount || 0;
-      }
-    });
+    // rankings 데이터 재구성
+    const rankings = rawRankings
+      .map((ranking) => {
+        const style = styles.find((s) => s.id === ranking.id);
+
+        if (!style) return null;
+
+        const thumbnailImage =
+          style.imageUrls && style.imageUrls.length > 0
+            ? style.imageUrls[0]
+            : style.thumbnail || "";
+
+        const categoriesObject = {};
+
+        if (style.categories && style.categories.length > 0) {
+          style.categories.forEach((category) => {
+            let categoryKey = "";
+
+            switch (category.type) {
+              case "TOP":
+                categoryKey = "top";
+                break;
+              case "BOTTOM":
+                categoryKey = "bottom";
+                break;
+              case "OUTER":
+                categoryKey = "outer";
+                break;
+              case "DRESS":
+                categoryKey = "dress";
+                break;
+              case "SHOES":
+                categoryKey = "shoes";
+                break;
+              case "BAG":
+                categoryKey = "bag";
+                break;
+              case "ACCESSORY":
+                categoryKey = "accessory";
+                break;
+              default:
+                categoryKey = category.type.toLowerCase();
+            }
+
+            categoriesObject[categoryKey] = {
+              name: category.name,
+              brand: category.brand,
+              price: category.price,
+            };
+          });
+        }
+        // 필요한 필드들 추가
+        return {
+          id: ranking.id,
+          avgScores: ranking.avgScores,
+          rating: ranking.total,
+          thumbnail: thumbnailImage,
+          nickname: style.nickname || "",
+          title: style.title || "",
+          tags: style.tags.map((tag) => tag.tagname),
+          categories: categoriesObject,
+          viewCount: style.viewCount || 0,
+          curationCount: style.curations.length,
+          createdAt: style.createdAt,
+        };
+      })
+      .filter(Boolean);
 
     const orderByOptions = {
       total: (a, b) => b.total - a.total,
@@ -194,25 +262,34 @@ styleRouter.get(
         b.avgScores.costEffectiveness - a.avgScores.costEffectiveness,
     };
 
-    // 첫 화면의 기본 정렬은 전체 ( total: 모든 옵션들의 평균 값 )
-    const orderBy = orderByOptions[sort] || orderByOptions["total"];
+    // 정렬 적용
+    const orderBy = orderByOptions[rankBy] || orderByOptions["total"];
     rankings.sort(orderBy);
 
+    // ranking 필드 추가 (순위)
+    rankings.forEach((item, index) => {
+      item.ranking = index + 1;
+    });
+
     const totalItemCount = rankings.length;
-    const totalPages = Math.ceil(totalItemCount / pageSize);
-    const paginatedRankings = rankings.slice(
-      (page - 1) * pageSize,
-      page * pageSize
-    );
+    const totalPages = Math.ceil(totalItemCount / pageSizeInt);
+    const paginatedRankings = rankings
+      .slice((pageInt - 1) * pageSizeInt, pageInt * pageSizeInt)
+      .map((item) => {
+        // avgScores 필드 제거
+        const { avgScores, ...rest } = item;
+        return rest;
+      });
 
     res.json({
-      currentPage: parseInt(page),
+      currentPage: pageInt,
       totalPages,
       totalItemCount,
       data: paginatedRankings,
     });
   })
 );
+
 //스타일 상세 조회 ranking 필요사항 추가
 styleRouter
   .route("/:styleId")
