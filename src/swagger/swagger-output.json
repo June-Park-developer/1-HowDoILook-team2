@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://one-howdoilook-team2.onrender.com:10000"
+      "url": "https://one-howdoilook-team2.onrender.com"
     }
   ],
   "basePath": "/",
