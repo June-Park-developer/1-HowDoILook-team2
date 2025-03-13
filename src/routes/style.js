@@ -237,7 +237,7 @@ styleRouter.get(
         return {
           id: ranking.id,
           avgScores: ranking.avgScores,
-          rating: ranking.total,
+          total: ranking.total,
           thumbnail: thumbnailImage,
           nickname: style.nickname || "",
           title: style.title || "",
@@ -267,6 +267,8 @@ styleRouter.get(
     // ranking 필드 추가 (순위)
     rankings.forEach((item, index) => {
       item.ranking = index + 1;
+      item.rating = item.avgScores[rankBy];
+      console.log(item.rating);
     });
 
     const totalItemCount = rankings.length;
@@ -275,7 +277,7 @@ styleRouter.get(
       .slice((pageInt - 1) * pageSizeInt, pageInt * pageSizeInt)
       .map((item) => {
         // avgScores 필드 제거
-        const { avgScores, ...rest } = item;
+        const { total, avgScores, ...rest } = item;
         return rest;
       });
 
@@ -309,6 +311,7 @@ styleRouter
           categories: true,
           tags: { select: { tagname: true } },
           imageUrls: true,
+          curations: true,
         },
       });
       const transformedCategories = style.categories.reduce(
@@ -325,9 +328,9 @@ styleRouter
       style.categories = transformedCategories;
 
       const curationCount = style.curations.length;
-
+      const { curations, ...styleWithoutCurations } = style;
       res.json({
-        ...style,
+        ...styleWithoutCurations,
         tags: style.tags.map((tag) => tag.tagname),
         curationCount,
       });
