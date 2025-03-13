@@ -120,19 +120,16 @@ export const CURATIONS = [
 // Comment
 export const COMMENTS = [
   {
-    password: "comment123",
     content: "저도 이 스타일 너무 좋아해요!",
     createdAt: new Date("2024-02-02T14:00:00Z"),
     curationId: 0,
   },
   {
-    password: "comment456",
     content: "이런 코디 참고해야겠어요.",
     createdAt: new Date("2024-02-06T17:00:00Z"),
     curationId: 1,
   },
   {
-    password: "comment789",
     content: "스트릿 감성이 최고죠!",
     createdAt: new Date("2024-02-11T12:00:00Z"),
     curationId: 2,
