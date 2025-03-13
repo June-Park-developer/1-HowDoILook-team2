@@ -8,7 +8,7 @@ const doc = {
   },
   servers: [
     {
-      url: `http://localhost:${process.env.PORT}`,
+      url: `${process.env.RENDER_EXTERNAL_URL}:${process.env.PORT}`,
     },
   ],
   schemes: ["http"],

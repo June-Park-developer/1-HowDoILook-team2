@@ -169,7 +169,7 @@ styleRouter.get(
     const pageSizeInt = parseInt(pageSize);
 
     const response = await fetch(
-      "http://localhost:3000/curations/average-scores"
+      `${process.env.RENDER_EXTERNAL_URL}:${process.env.PORT}/curations/average-scores`
     );
     const rawRankings = await response.json();
 
@@ -268,7 +268,6 @@ styleRouter.get(
     rankings.forEach((item, index) => {
       item.ranking = index + 1;
       item.rating = item.avgScores[rankBy];
-      console.log(item.rating);
     });
 
     const totalItemCount = rankings.length;
