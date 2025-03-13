@@ -17,6 +17,61 @@ import {
 } from "../utils/structs.js";
 import { CategoryType } from "@prisma/client";
 
+function isolateCategoriesTagsArray(body) {
+  const categoriesReqJson = body.categories;
+  delete body.categories;
+  const tagsReqArray = body.tags;
+  if (tagsReqArray) delete body.tags;
+
+  let categoriesInputArray = [];
+  Object.keys(categoriesReqJson).forEach((key) => {
+    let categoryType;
+    switch (key) {
+      case "top":
+        categoryType = CategoryType.TOP;
+        break;
+      case "bottom":
+        categoryType = CategoryType.BOTTOM;
+        break;
+      case "outer":
+        categoryType = CategoryType.OUTER;
+        break;
+      case "dress":
+        categoryType = CategoryType.DRESS;
+        break;
+      case "shoes":
+        categoryType = CategoryType.SHOES;
+        break;
+      case "bag":
+        categoryType = CategoryType.BAG;
+        break;
+      case "accessory":
+        categoryType = CategoryType.ACCESSORY;
+        break;
+      default:
+        const e = new Error();
+        e.name = "BadQuery";
+        throw e;
+    }
+    categoriesInputArray.push({
+      name: categoriesReqJson[key].name,
+      brand: categoriesReqJson[key].brand,
+      price: categoriesReqJson[key].price,
+      type: categoryType,
+    });
+  });
+
+  let tagsInputArray = [];
+  Object.values(tagsReqArray).forEach((item) =>
+    tagsInputArray.push({
+      where: { tagname: item },
+      create: { tagname: item },
+    })
+  );
+
+  return { categoriesInputArray, tagsInputArray, tagsReqArray };
+}
+
 const styleRouter = express.Router();
 styleRouter
   .route("/:styleId/curations")
@@ -167,7 +222,7 @@ styleRouter
 
       const { styleId } = req.params;
       assert(styleId, OrOverZeroString);
-      const style = await prisma.style.findUnique({
+      const style = await prisma.style.findUniqueOrThrow({
         where: { id: parseInt(styleId) },
         include: {
           categories: true,
@@ -195,6 +250,47 @@ styleRouter
       const { password } = req.body;
       const modelName = prisma.style.getEntityName();
       await confirmPassword(modelName, styleId, password);
+
+      // //카테고리 어레이, 태그 어레이
+
+      // //기존태그 가져와서 저장 + 가져오는 김에 카테고리도
+      // const existingTags = await prisma.style.findUnique({
+      //   where: { id: styleId },
+      //   select: {
+      //     tags: {
+      //       select: { name: true },
+      //     },
+      //   },
+      // });
+      // //새 태그와 비교
+      // const existingTagNames = existingTags.tags.map((tag) => tag.name);
+      // const newTagNames = tagsInputArray.map((tag) => tag.where.name);
+
+      // // 3. `disconnect`할 `tags`를 찾아내기
+      // const tagsToDisconnect = existingTagNames
+      //   .filter((tag) => !newTagNames.includes(tag))
+      //   .map((tag) => ({ name: tag }));
+
+      // //새 카테고리와 비교
+
+      // //카테고리 삭제
+
+      // // 4. 업데이트 요청 (tags 연결 및 disconnect 처리)
+      // const updatedStyle = await prisma.style.update({
+      //   where: { id: styleId },
+      //   data: {
+      //     tags: {
+      //       connectOrCreate: tagsInputArray, // 새로운 tags 연결
+      //       disconnect: tagsToDisconnect, // 불일치하는 tags 해제
+      //     },
+      //   },
+      //   select: {
+      //     id: true,
+      //     password: true,
+      //     content: true,
+      //     createdAt: true,
+      //   },
+      // });
 
       const tagRecords = await Promise.all(
         req.body.tags.map(async (tagname) => {
@@ -305,98 +401,41 @@ styleRouter
   .post(
     asyncHandler(async (req, res) => {
       assert(req.body, CreateStyle);
-      // assert(req.body.categories, CreateCategories);
       Object.values(req.body.categories).forEach((item) =>
         assert(item, CreateCategories)
       );
 
-      const categoriesReqJson = req.body.categories;
-      delete req.body.categories;
-      const tagsReqArray = req.body.tags;
-      if (tagsReqArray) delete req.body.tag;
-
-      let categoriesInputArray = [];
-      Object.keys(categoriesReqJson).forEach((key) => {
-        let categoryType;
-        switch (key) {
-          case "top":
-            categoryType = CategoryType.TOP;
-            break;
-          case "bottom":
-            categoryType = CategoryType.BOTTOM;
-            break;
-          case "outer":
-            categoryType = CategoryType.OUTER;
-            break;
-          case "dress":
-            categoryType = CategoryType.DRESS;
-            break;
-          case "shoes":
-            categoryType = CategoryType.SHOES;
-            break;
-          case "bag":
-            categoryType = CategoryType.BAG;
-            break;
-          case "accessory":
-            categoryType = CategoryType.ACCESSORY;
-            break;
-          default:
-            const e = new Error();
-            e.name = "BadQuery";
-            throw e;
-        }
-        categoriesInputArray.push({
-          name: categoriesReqJson[key].name,
-          brand: categoriesReqJson[key].brand,
-          price: categoriesReqJson[key].price,
-          type: categoryType,
-        });
-      });
+      const isolatedArray = isolateCategoriesTagsArray(req.body);
 
       let newStyle;
-
-      if (tagsReqArray) {
-        let tagsInputArray = [];
-        Object.values(tagsReqArray).forEach((item) =>
-          tagsInputArray.push({
-            where: { tagname: item },
-            create: { tagname: item },
-          })
-        );
-
-        newStyle = await prisma.style.create({
-          data: {
-            ...req.body,
-            categories: {
-              create: categoriesInputArray,
-            },
+      const tagsData = isolatedArray.tagsReqArray
+        ? {
             tags: {
-              connectOrCreate: tagsInputArray,
+              connectOrCreate: isolatedArray.tagsInputArray,
             },
+          }
+        : undefined;
+      newStyle = await prisma.style.create({
+        data: {
+          ...req.body,
+          categories: {
+            create: isolatedArray.categoriesInputArray,
           },
-          select: {
-            id: true,
-            password: true,
-            content: true,
-            createdAt: true,
-          },
-        });
-      } else {
-        newStyle = await prisma.style.create({
-          data: {
-            ...req.body,
-            categories: {
-              create: categoriesInputArray,
-            },
-          },
-          select: {
-            id: true,
-            password: true,
-            content: true,
-            createdAt: true,
-          },
-        });
-      }
+          ...(tagsData && tagsData),
+        },
+        select: {
+          id: true,
+          nickname: true,
+          title: true,
+          content: true,
+          viewCount: true,
+          createdAt: true,
+          categories: true,
+          tags: true,
+          imageUrls: true,
+        },
+      });
+      newStyle.curationCount = 0;
 
       res.status(201).json(newStyle);
     })
