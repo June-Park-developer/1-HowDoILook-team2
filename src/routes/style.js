@@ -116,20 +116,46 @@ styleRouter
           practicality: true,
           costEffectiveness: true,
           createdAt: true,
-          comment: true,
+          //comment 필드 수정
+          comment: {
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+            },
+          },
         },
       });
+
+      const filteredCurations = curations.filter(
+        (curation) => curation !== undefined
+      );
+
+      //큐레이션 등록 수정
+      filteredCurations.forEach((curation) => {
+        curation.comment = Array.isArray(curation.comment)
+          ? curation.comment
+          : [];
+        curation.commentCount = curation.comment.length;
+      });
+
       const totalItemCount = await prisma.curation.count({
         where: { ...search, styleId: parseInt(styleId) },
       });
       const totalPages = Math.ceil(totalItemCount / pageSize);
+
       const currentPage = parseInt(page);
       if (totalPages !== 0 && currentPage > totalPages) {
         const e = new Error();
         e.name = "BadQuery";
         throw e;
       }
-      res.json({ currentPage, totalPages, totalItemCount, data: curations });
+      res.json({
+        currentPage,
+        totalPages,
+        totalItemCount,
+        data: filteredCurations,
+      });
     })
   )
   .post(
@@ -237,7 +263,7 @@ styleRouter.get(
         return {
           id: ranking.id,
           avgScores: ranking.avgScores,
-          total: ranking.total,
+          rating: ranking.total,
           thumbnail: thumbnailImage,
           nickname: style.nickname || "",
           title: style.title || "",
@@ -267,7 +293,6 @@ styleRouter.get(
     // ranking 필드 추가 (순위)
     rankings.forEach((item, index) => {
       item.ranking = index + 1;
-      item.rating = item.avgScores[rankBy];
     });
 
     const totalItemCount = rankings.length;
@@ -276,7 +301,7 @@ styleRouter.get(
       .slice((pageInt - 1) * pageSizeInt, pageInt * pageSizeInt)
       .map((item) => {
         // avgScores 필드 제거
-        const { total, avgScores, ...rest } = item;
+        const { avgScores, ...rest } = item;
         return rest;
       });
 
@@ -298,6 +323,13 @@ styleRouter
 
       const { styleId } = req.params;
       assert(styleId, OrOverZeroString);
+
+      //조회수 증가
+      await prisma.style.update({
+        where: { id: parseInt(styleId) },
+        data: { viewCount: { increment: 1 } },
+      });
+
       const style = await prisma.style.findUniqueOrThrow({
         where: { id: parseInt(styleId) },
         select: {
@@ -310,7 +342,14 @@ styleRouter
           categories: true,
           tags: { select: { tagname: true } },
           imageUrls: true,
-          curations: true,
+          //큐레이션 필드 추가 (큐레이션 등록 안되는 오류 수정)
+          curations: {
+            select: {
+              id: true,
+              nickname: true,
+              content: true,
+            },
+          },
         },
       });
       const transformedCategories = style.categories.reduce(
@@ -326,11 +365,14 @@ styleRouter
       );
       style.categories = transformedCategories;
 
+      style.curations = Array.isArray(style.curations) ? style.curations : [];
       const curationCount = style.curations.length;
-      const { curations, ...styleWithoutCurations } = style;
+
       res.json({
-        ...styleWithoutCurations,
-        tags: style.tags.map((tag) => tag.tagname),
+        ...style,
+        tags: style.tags?.map((tag) => tag.tagname) ?? [],
+        categories: style.categories ?? [],
+        imageUrls: style.imageUrls ?? [],
         curationCount,
       });
     })
@@ -433,6 +475,8 @@ styleRouter
     asyncHandler(async (req, res) => {
       const page = parseInt(req.query.page) || 1;
       const pageSize = parseInt(req.query.pageSize) || 10;
+      //추가
+      const currentPage = parseInt(page);
       const sortBy = req.query.sortBy || "latest";
       const searchBy = req.query.searchBy || "title";
       const keyword = req.query.keyword || "";
@@ -489,7 +533,7 @@ styleRouter
           tags: { select: { tagname: true } },
           imageUrls: true,
           curations: true,
-        },
+        }, //썸네일, 큐레잍이카운드
       });
 
       styles.forEach((item) => {
@@ -515,7 +559,7 @@ styleRouter
       const totalItemCount = styles.length;
       const totalPages = Math.ceil(totalItemCount / pageSize);
       res.json({
-        currentPage: page,
+        currentPage,
         totalPages,
         totalItemCount,
         data: styles,
@@ -524,6 +568,7 @@ styleRouter
   )
   .post(
     asyncHandler(async (req, res) => {
+      //console.log("받은 요청 데이터:", req.body);
       assert(req.body, CreateStyle);
       Object.values(req.body.categories).forEach((item) =>
         assert(item, CreateCategories)
@@ -559,20 +604,8 @@ styleRouter
           imageUrls: true,
         },
       });
-      const transformedCategories = newStyle.categories.reduce(
-        (object, { type, name, brand, price }) => {
-          object[type.toLowerCase()] = {
-            name,
-            brand,
-            price,
-          };
-          return object;
-        },
-        {}
-      );
-
-      newStyle.categories = transformedCategories;
       newStyle.curationCount = 0;
+
       res.status(201).json(newStyle);
     })
   );
