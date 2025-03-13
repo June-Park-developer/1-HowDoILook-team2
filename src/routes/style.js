@@ -573,7 +573,7 @@ styleRouter
         currentPage,
         totalPages,
         totalItemCount,
-        data: styles,
+        data: paginatedStyles,
       });
     })
   )
