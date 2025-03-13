@@ -192,9 +192,7 @@ styleRouter.get(
         if (!style) return null;
 
         const thumbnailImage =
-          style.imageUrls && style.imageUrls.length > 0
-            ? style.imageUrls[0]
-            : style.thumbnail || "";
+          style.imageUrls.length > 0 ? style.imageUrls[0] : "";
 
         const categoriesObject = {};
 
