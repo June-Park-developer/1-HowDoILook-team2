@@ -1,0 +1,8 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "2팀-How Do I Look",
+    "description": "이 프로젝트는 코드잇 Node.js 백엔드 스프린트의 초급 팀 프로젝트입니다.",
+    "version": "1.0.0"
+  }
+}

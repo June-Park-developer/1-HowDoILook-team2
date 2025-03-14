@@ -195,7 +195,7 @@ styleRouter.get(
     const pageSizeInt = parseInt(pageSize);
 
     const response = await fetch(
-      "http://localhost:3000/curations/average-scores"
+      `${process.env.RENDER_EXTERNAL_URL}/curations/average-scores`
     );
     const rawRankings = await response.json();
 
