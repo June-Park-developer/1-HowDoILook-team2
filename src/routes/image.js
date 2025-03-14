@@ -58,10 +58,9 @@ imageRouter.route("/").post(
       e.name = "FileExtensionError";
       throw e;
     }
-
-    const downloadPath = `${req.protocol}://${req.get("host")}/download/${
-      req.file.filename
-    }`;
+    const downloadPath = `${process.env.PROTOCOL}://${req.get(
+      "host"
+    )}/download/${req.file.filename}`;
     res.json({ imageUrl: downloadPath });
   })
 );
