@@ -116,7 +116,6 @@ styleRouter
           practicality: true,
           costEffectiveness: true,
           createdAt: true,
-          //comment 필드 수정
           comment: {
             select: {
               id: true,
@@ -131,10 +130,9 @@ styleRouter
         (curation) => curation !== undefined
       );
 
-      // 큐레이션의 comment가 없을때 빈 객체 할당하기
       filteredCurations.forEach((curation) => {
         if (curation.comment == null) {
-          curation.comment = {}; // comment가 없으면 빈 객체 할당
+          curation.comment = {};
         }
       });
 
@@ -182,8 +180,6 @@ styleRouter
     })
   );
 
-//랭킹
-
 styleRouter.get(
   "/ranking",
   asyncHandler(async (req, res) => {
@@ -198,18 +194,16 @@ styleRouter.get(
     );
     const rawRankings = await response.json();
 
-    // Style 데이터 가져오기 - 필요한 필드들 추가
     const styles = await prisma.style.findMany({
       include: {
         tags: { select: { tagname: true } },
         categories: {
           select: { name: true, brand: true, price: true, type: true },
-        }, // categories 추가
+        },
         curations: { select: { id: true } },
       },
     });
 
-    // rankings 데이터 재구성
     const rankings = rawRankings
       .map((ranking) => {
         const style = styles.find((s) => s.id === ranking.id);
@@ -258,7 +252,7 @@ styleRouter.get(
             };
           });
         }
-        // 필요한 필드들 추가
+
         return {
           id: ranking.id,
           avgScores: ranking.avgScores,
@@ -285,11 +279,9 @@ styleRouter.get(
         b.avgScores.costEffectiveness - a.avgScores.costEffectiveness,
     };
 
-    // 정렬 적용
     const orderBy = orderByOptions[rankBy] || orderByOptions["total"];
     rankings.sort(orderBy);
 
-    // ranking 필드 추가 (순위)
     rankings.forEach((item, index) => {
       item.ranking = index + 1;
       if (rankBy === "total") {
@@ -304,7 +296,6 @@ styleRouter.get(
     const paginatedRankings = rankings
       .slice((pageInt - 1) * pageSizeInt, pageInt * pageSizeInt)
       .map((item) => {
-        // avgScores 필드 제거
         const { total, avgScores, ...rest } = item;
         return rest;
       });
@@ -318,7 +309,6 @@ styleRouter.get(
   })
 );
 
-//스타일 상세 조회 ranking 필요사항 추가
 styleRouter
   .route("/:styleId")
   .get(
@@ -328,7 +318,6 @@ styleRouter
       const { styleId } = req.params;
       assert(styleId, OrOverZeroString);
 
-      //조회수 증가
       await prisma.style.update({
         where: { id: parseInt(styleId) },
         data: { viewCount: { increment: 1 } },
@@ -346,7 +335,6 @@ styleRouter
           categories: true,
           tags: { select: { tagname: true } },
           imageUrls: true,
-          //큐레이션 필드 추가 (큐레이션 등록 안되는 오류 수정)
           curations: {
             select: {
               id: true,
@@ -468,14 +456,12 @@ styleRouter
     })
   );
 
-// 스타일 목록 조회, 등록
 styleRouter
   .route("/")
   .get(
     asyncHandler(async (req, res) => {
       const page = parseInt(req.query.page) || 1;
       const pageSize = parseInt(req.query.pageSize) || 10;
-      //추가
       const currentPage = parseInt(page);
       const sortBy = req.query.sortBy || "latest";
       const searchBy = req.query.searchBy || "title";
@@ -483,19 +469,8 @@ styleRouter
       const tag = req.query.tag || "";
       assert(req.query, ValidQuery);
 
-      // pageSize
       const skip = (page - 1) * pageSize;
       const take = pageSize;
-
-      // sortBy
-      // let orderBy = {};
-      // if (sortBy === "latest") {
-      //   orderBy = { createdAt: "desc" };
-      // } else if (sortBy === "mostViewed") {
-      //   orderBy = { viewCount: "desc" };
-      // } else if (sortBy === "mostCurated") {
-      //   orderBy = { curationCount: "desc" };
-      // }
 
       let search;
       switch (searchBy) {
@@ -530,7 +505,7 @@ styleRouter
           tags: { select: { tagname: true } },
           imageUrls: true,
           curations: true,
-        }, //썸네일, 큐레잍이카운드
+        },
       });
 
       styles.forEach((item) => {
@@ -578,7 +553,6 @@ styleRouter
   )
   .post(
     asyncHandler(async (req, res) => {
-      //console.log("받은 요청 데이터:", req.body);
       assert(req.body, CreateStyle);
       Object.values(req.body.categories).forEach((item) =>
         assert(item, CreateCategories)

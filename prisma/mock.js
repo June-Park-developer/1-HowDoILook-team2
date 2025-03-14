@@ -1,4 +1,3 @@
-//  Style
 export const STYLES = [
   {
     id: 0,
@@ -9,12 +8,12 @@ export const STYLES = [
     tags: {
       connectOrCreate: [
         {
-          where: { tagname: "casual" }, // "casual"이 존재하면 연결, 없으면 새로 생성
-          create: { tagname: "casual" }, // 새로 생성할 태그
+          where: { tagname: "casual" },
+          create: { tagname: "casual" },
         },
         {
-          where: { tagname: "daily" }, // "daily"가 존재하면 연결, 없으면 새로 생성
-          create: { tagname: "daily" }, // 새로 생성할 태그
+          where: { tagname: "daily" },
+          create: { tagname: "daily" },
         },
       ],
     },
@@ -77,7 +76,6 @@ export const STYLES = [
   },
 ];
 
-// Curation
 export const CURATIONS = [
   {
     id: 0,
@@ -117,7 +115,6 @@ export const CURATIONS = [
   },
 ];
 
-// Comment
 export const COMMENTS = [
   {
     content: "저도 이 스타일 너무 좋아해요!",
@@ -136,7 +133,6 @@ export const COMMENTS = [
   },
 ];
 
-// StyleItem
 export const CATEGORIES = [
   {
     type: "TOP",

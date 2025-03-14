@@ -104,7 +104,6 @@ curationRouter.get(
       },
     });
 
-    // 코드 추가(재웅) : 스타일별 평균 점수 계산 API
     const averageScores = styles.map((style) => {
       const totalCuration = style.curations.length;
 
@@ -128,7 +127,6 @@ curationRouter.get(
       return {
         id: style.id,
         avgScores,
-        // 전체 평균 점수 (total) 계산
         total:
           (avgScores.trendy +
             avgScores.personality +
