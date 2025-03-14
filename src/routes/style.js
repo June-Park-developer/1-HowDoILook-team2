@@ -131,12 +131,11 @@ styleRouter
         (curation) => curation !== undefined
       );
 
-      //큐레이션 등록 수정
+      // 큐레이션의 comment가 없을때 빈 객체 할당하기
       filteredCurations.forEach((curation) => {
-        curation.comment = Array.isArray(curation.comment)
-          ? curation.comment
-          : [];
-        curation.commentCount = curation.comment.length;
+        if (curation.comment == null) {
+          curation.comment = {}; // comment가 없으면 빈 객체 할당
+        }
       });
 
       const totalItemCount = await prisma.curation.count({
