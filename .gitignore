@@ -3,10 +3,7 @@ node_modules
 .env
 files/*
 !files/.gitkeep
-!files/card_frame00-resources.assets-1272-1741841755986.png
-!files/card_frame01-resources.assets-1244-1741841813146.png
-!files/card_frame02-resources.assets-1224-1741841832624.png
-!files/card_frame03-resources.assets-1213-1741841845911.png
-!files/card_frame07-resources.assets-1120-1741841860919.png
-!files/card_frame08-resources.assets-1034-1741841873130.png
+!files/1.jpg
+!files/2.jpg
+!files/3.jpg
 request
