@@ -62,7 +62,18 @@ imageRouter.route("/").post(
       "host"
     )}/download/${req.file.filename}`;
     res.json({ imageUrl: downloadPath });
-  })
+  }),
+  (err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res
+          .status(400)
+          .json({ error: "File size exceeds the 5MB limit." });
+      }
+      return res.status(500).json({ error: "File upload failed." });
+    }
+    return res.status(500).json({ error: "Internal server error." });
+  }
 );
 
 export default imageRouter;
